@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>身心障礙日常生活支持</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=LXGW+WenKai+TC:wght@400;700&family=Caveat:wght@600;700&family=Archivo+Black&display=swap">
+<style>
+/* Layout: one 1600×900 collage "board" per screen on grid paper, scroll-snapped vertically; under 820px the boards reflow into a reading column. */
+:root{
+  --paper:#ECEBE7; --grid:rgba(20,20,20,.055); --card:#FFFFFF; --ink:#161616; --mute:#6A6964;
+  --line:#1C1C1C; --yellow:#FFC629; --yellow-soft:#FFE68F; --scrap:#F6F5F1; --shade:rgba(20,20,10,.14);
+  --f-head:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-hand:"LXGW WenKai TC","Kaiti TC","STKaiti",serif;
+  --f-en:"Caveat","Comic Sans MS",cursive;
+  --f-num:"Archivo Black","Arial Black",Impact,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+body:not(.mob){overflow-y:scroll}
+html.snap{scroll-snap-type:y mandatory}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+/* ---------- slide shell ---------- */
+.slide{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;overflow:hidden;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px}
+.stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(-50%,-50%) scale(var(--s,1));
+  padding:64px 92px 58px;display:flex;flex-direction:column;gap:26px}
+.hd{display:flex;flex-direction:column;gap:6px;position:relative;z-index:2}
+.kick{font-family:var(--f-hand);font-size:22px;color:var(--mute);display:flex;align-items:center;gap:10px;letter-spacing:.04em}
+.kick i{display:inline-block;width:34px;height:2px;background:var(--line)}
+.hd h2{margin:0;font-family:var(--f-head);font-weight:900;font-size:56px;line-height:1.15;letter-spacing:.01em;text-wrap:balance}
+.bd{flex:1;min-height:0;display:flex;gap:44px;position:relative;z-index:2}
+.pnum{position:absolute;right:92px;bottom:22px;font-family:var(--f-en);font-size:24px;color:var(--mute);z-index:2}
+mark{background:linear-gradient(transparent 52%,var(--yellow) 52%,var(--yellow) 92%,transparent 92%);color:inherit;padding:0 .08em}
+b,strong{font-weight:900}
+
+/* points */
+.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;justify-content:space-evenly;gap:14px;flex:1;min-width:0}
+.pts li{display:grid;grid-template-columns:30px 1fr;gap:16px;align-items:start;font-size:31px;line-height:1.45;font-weight:500}
+.pts li::before{content:"";width:22px;height:22px;margin-top:.42em;border:2.5px solid var(--line);border-radius:50%;background:var(--yellow)}
+.pts li .ld{display:block;font-weight:900}
+.pts li .ds{display:block;font-size:.8em;color:#3a3936;font-weight:400;margin-top:2px}
+.pts.dense li{font-size:27px}
+.pts.dense li .ds{font-size:.82em}
+.col-text{flex:1.05;min-width:0;display:flex;flex-direction:column;gap:18px}
+.col-img{flex:1;min-width:0;display:grid;gap:22px;align-content:stretch}
+.note{font-family:var(--f-hand);font-size:25px;line-height:1.5;background:var(--card);padding:16px 22px;border:2px solid var(--line);border-radius:3px;
+  box-shadow:6px 6px 0 var(--yellow);align-self:flex-start;max-width:100%}
+.note b{font-family:var(--f-body)}
+
+/* photo cards */
+.ph{position:relative;margin:0;background:var(--card);padding:10px 10px 0;box-shadow:0 10px 24px -12px var(--shade),0 1px 0 rgba(0,0,0,.05);
+  display:flex;flex-direction:column;min-height:0;min-width:0;transform:rotate(var(--r,0deg))}
+.ph img,.ph video{flex:1;min-height:0;width:100%;height:100%;object-fit:contain;background:#fff;display:block}
+.ph figcaption{font-family:var(--f-hand);font-size:22px;text-align:center;padding:8px 4px 10px;line-height:1.3}
+.ph:not(:has(figcaption)){padding-bottom:10px}
+.ph.tape::before{content:"";position:absolute;top:-14px;left:50%;width:110px;height:28px;transform:translateX(-50%) rotate(-3deg);
+  background:rgba(255,214,90,.78);box-shadow:0 1px 2px rgba(0,0,0,.08);z-index:2}
+.ph.cover img{object-fit:cover}
+.g1{grid-template-columns:1fr}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(2,1fr);grid-template-rows:1fr 1fr}
+.g4r{grid-template-columns:repeat(4,1fr)}
+.g6{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr}
+.g8{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr}
+.g12{grid-template-columns:repeat(6,1fr);grid-template-rows:1fr 1fr}
+.g5{grid-template-columns:repeat(5,1fr)}
+
+/* gallery slide */
+.gal{flex:1;display:grid;gap:26px;min-height:0}
+.gal-wrap{flex:1;display:flex;flex-direction:column;gap:22px;min-height:0;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{font-size:24px;font-weight:700;padding:8px 18px;border:2px solid var(--line);border-radius:999px;background:var(--card)}
+.chip.y{background:var(--yellow)}
+
+/* columns */
+.cols{flex:1;display:grid;gap:30px;min-height:0}
+.colc{background:var(--card);border:2px solid var(--line);border-radius:4px;padding:26px 28px;display:flex;flex-direction:column;gap:14px;min-width:0;position:relative}
+.colc h3{margin:0;font-size:32px;font-weight:900;display:flex;align-items:center;gap:12px}
+.colc h3 .tag{font-family:var(--f-en);font-size:26px;font-weight:700;color:var(--mute)}
+.colc.hi{background:var(--yellow-soft)}
+.colc .pts li{font-size:28px;grid-template-columns:22px 1fr;gap:12px}
+.colc .pts li::before{width:16px;height:16px;border-width:2px}
+.colc .ph{flex:1;max-height:300px}
+.colc .pic{flex:1;min-height:0;max-height:240px;display:grid;gap:12px}
+.colc .pic .ph img{max-height:190px}
+.colc .pic .ph{max-height:none}
+
+/* steps */
+.steps{list-style:none;margin:0;padding:0;flex:1;display:grid;gap:22px;counter-reset:st;min-height:0}
+.steps li{counter-increment:st;background:var(--card);border:2px solid var(--line);border-radius:4px;padding:22px 22px 20px;display:flex;flex-direction:column;justify-content:center;gap:10px;position:relative;min-width:0}
+.steps li::before{content:counter(st);font-family:var(--f-num);font-size:30px;width:56px;height:56px;border-radius:50%;background:var(--yellow);border:2.5px solid var(--line);display:grid;place-items:center}
+.steps li b{font-size:34px;line-height:1.25}
+.steps li span{font-size:25px;color:#3a3936;line-height:1.45}
+.steps.chain li:not(:last-child)::after{content:"";position:absolute;right:-20px;top:50%;width:18px;height:18px;border-top:3px solid var(--line);border-right:3px solid var(--line);transform:translateY(-50%) rotate(45deg)}
+.flow{display:flex;flex-wrap:wrap;gap:10px 8px;align-items:center;font-size:24px;line-height:1.3}
+.flow span{background:var(--card);border:2px solid var(--line);padding:8px 14px;border-radius:4px;font-weight:700}
+.flow span.hl{background:var(--yellow)}
+.flow span.dim{background:#dddcd6;color:#55544f}
+.flow em{font-style:normal;font-weight:900}
+
+/* table */
+.tbl-wrap{flex:1;min-height:0;overflow:auto;display:grid;align-content:center}
+table.t{border-collapse:collapse;width:100%;background:var(--card);font-size:25px;border:2.5px solid var(--line)}
+.t th,.t td{border:1.5px solid #bdbbb4;padding:12px 16px;text-align:left;vertical-align:top;line-height:1.4}
+.t th{background:var(--ink);color:#fff;font-weight:700}
+.t td:first-child{font-weight:700;background:#f4f3ef}
+.t.cmp td,.t.cmp th{text-align:center}
+.t.cmp td:first-child{text-align:left}
+.t.small{font-size:21px}
+.t.tbig{font-size:32px}
+.t.tbig th,.t.tbig td{padding:22px 24px}
+.tgrid{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:18px}
+.tgrid div{background:var(--card);border:2px solid var(--line);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.tgrid b{font-size:27px}
+.tgrid span{font-size:20px;color:#3a3936;line-height:1.4}
+.tgrid div:nth-child(3n+1){background:var(--yellow-soft)}
+body.mob .tgrid{grid-template-columns:1fr 1fr}
+body.mob .tgrid b{font-size:18px}
+body.mob .tgrid span{font-size:14px}
+.t.small th,.t.small td{padding:7px 12px}
+
+/* quiz */
+.quiz{flex:1;display:flex;gap:44px;min-height:0}
+.qbox{flex:1.1;display:flex;flex-direction:column;justify-content:center;gap:26px;min-width:0}
+.qq{font-size:44px;font-weight:900;line-height:1.35;text-wrap:balance}
+.qopts{display:grid;gap:18px}
+.qopt{font:inherit;font-size:32px;font-weight:700;text-align:left;display:flex;align-items:center;gap:20px;padding:18px 24px;background:var(--card);
+  border:2.5px solid var(--line);border-radius:6px;cursor:pointer;color:var(--ink);transition:transform .15s,box-shadow .15s}
+.qopt:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--line)}
+.qopt:focus-visible,.btn:focus-visible,.navb:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.qopt .k{font-family:var(--f-num);font-size:26px;width:50px;height:50px;flex:none;border-radius:50%;border:2.5px solid var(--line);display:grid;place-items:center;background:var(--paper)}
+.qopt.right{background:var(--yellow)}
+.qopt.right .k{background:var(--ink);color:var(--yellow)}
+.qopt.wrong{opacity:.5;text-decoration:line-through}
+.qwhy{font-family:var(--f-hand);font-size:28px;line-height:1.5;background:var(--card);border:2px dashed var(--line);padding:16px 22px;border-radius:4px}
+.quiz:not(.done) .qwhy{visibility:hidden}
+.btn{font:inherit;font-size:22px;font-weight:700;padding:10px 20px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;align-self:flex-start}
+.btn:hover{background:var(--yellow)}
+.qside{flex:.9;min-width:0;display:grid;gap:20px}
+
+/* sorting game */
+.sort{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:24px}
+.card{font:inherit;position:relative;background:var(--card);border:2.5px solid var(--line);border-radius:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px;color:var(--ink)}
+.card .n{font-family:var(--f-num);font-size:26px;position:absolute;left:14px;top:10px}
+.card .w{font-size:36px;font-weight:900}
+.card .res{font-size:24px;font-weight:700;padding:6px 16px;border-radius:999px;border:2px solid var(--line);visibility:hidden}
+.card.show .res{visibility:visible}
+.card.show.a{background:var(--yellow-soft)}
+.card.show.a .res{background:var(--yellow)}
+.card.show.b .res{background:#dddcd6}
+
+/* big statement */
+.big{flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px}
+.big .q{font-size:76px;font-weight:900;line-height:1.25;text-wrap:balance}
+.big .s{font-family:var(--f-hand);font-size:34px;color:#3a3936;max-width:26em;line-height:1.5}
+
+/* links */
+.links{flex:1;display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:26px;min-height:0}
+.lk{background:var(--card);border:2px solid var(--line);border-radius:6px;padding:22px;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;color:var(--ink);text-decoration:none;min-width:0}
+.lk:hover{box-shadow:6px 6px 0 var(--yellow)}
+.lk .qr{width:230px;height:230px;max-width:100%}
+.links:has(.lk:nth-child(4)) .lk .qr{width:160px;height:160px}
+.links:has(.lk:nth-child(4)) .lk{padding:14px;gap:6px}
+.lk .qr svg{width:100%;height:100%}
+.lk b{font-size:26px}
+.lk span{font-size:19px;color:var(--mute);line-height:1.4;word-break:break-all}
+
+/* bar chart */
+.bars{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:10px;min-width:0}
+.bar{display:grid;grid-template-columns:270px 1fr 96px;align-items:center;gap:18px;font-size:27px;font-weight:700}
+.bar .tr{height:34px;background:#dcdbd5;border-radius:3px;overflow:hidden}
+.bar .fl{height:100%;background:var(--ink);width:var(--w)}
+.bar.hi .fl{background:var(--yellow);box-shadow:inset 0 0 0 2.5px var(--line)}
+.bar .v{font-family:var(--f-num);font-size:26px;font-variant-numeric:tabular-nums;text-align:right}
+
+/* tips board (復能20小撇步) */
+.tips{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:20px;min-height:0}
+.tip{background:var(--card);border:2px solid var(--line);border-radius:4px;padding:18px 22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.tip h4{margin:0;font-size:28px;font-weight:900;display:inline-flex}
+.tip h4 span{background:var(--yellow);padding:0 8px}
+.tip ul{margin:0;padding-left:1.1em;font-size:22px;line-height:1.5;display:flex;flex-direction:column;justify-content:space-evenly;flex:1}
+.tip.wide{grid-row:span 2}
+
+/* chapter divider */
+.ch .stage{padding:80px 100px;flex-direction:row;align-items:center;gap:60px}
+.ch-text{flex:1.1;display:flex;flex-direction:column;gap:22px;position:relative;z-index:3}
+.ch-no{font-family:var(--f-num);font-size:150px;line-height:.9;color:var(--ink);display:flex;align-items:flex-end;gap:18px}
+.ch-no small{font-family:var(--f-en);font-size:44px;line-height:1.3;color:var(--mute)}
+.ch-t{font-size:84px;font-weight:900;line-height:1.15;margin:0;text-wrap:balance}
+.ch-d{font-family:var(--f-hand);font-size:32px;color:#3a3936;line-height:1.5;max-width:20em}
+.ch-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.ch-list span{font-size:22px;font-weight:700;padding:6px 14px;background:var(--card);border:2px solid var(--line);border-radius:999px}
+.ch-art{flex:1;align-self:stretch;position:relative;min-width:0}
+.sun{position:absolute;border-radius:50%;background:var(--yellow);border:3px solid var(--line)}
+.scrap{position:absolute;background:var(--scrap);
+  background-image:linear-gradient(rgba(0,0,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.08) 1px,transparent 1px);background-size:22px 22px;
+  clip-path:polygon(3% 6%,22% 0,48% 4%,71% 1%,97% 7%,100% 34%,96% 61%,99% 92%,74% 97%,47% 100%,20% 95%,1% 99%,4% 70%,0 38%);box-shadow:0 0 0 1px rgba(0,0,0,.05)}
+.half{position:absolute;overflow:hidden;background:#fff;box-shadow:0 18px 40px -18px var(--shade)}
+.half img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.35) brightness(1.06);display:block}
+.half::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,.42) 28%,transparent 31%);background-size:5px 5px;mix-blend-mode:multiply;opacity:.55;pointer-events:none}
+.half.color img{filter:none}
+.half.color::after{display:none}
+
+/* cover */
+.cv .stage{flex-direction:row;align-items:center;gap:40px;padding:80px 100px}
+.cv-t{flex:1.25;display:flex;flex-direction:column;gap:28px;position:relative;z-index:3}
+.cv-t .tag{font-family:var(--f-en);font-size:40px;color:var(--mute)}
+.cv-t h1{margin:0;font-size:118px;font-weight:900;line-height:1.08;letter-spacing:.01em}
+.cv-t h1 mark{padding:0 .06em}
+.cv-t .who{display:flex;gap:16px;align-items:center;font-size:30px;font-weight:700}
+.cv-t .who span{font-family:var(--f-hand);font-weight:400;color:#3a3936}
+.cv-t .hint{font-family:var(--f-hand);font-size:26px;color:var(--mute);display:flex;align-items:center;gap:12px}
+.cv-art{flex:1;align-self:stretch;position:relative}
+
+/* toc slide */
+.toc-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);grid-auto-flow:column;gap:12px 30px;min-height:0}
+.toc-grid a{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:4px;padding:8px 18px;font-size:25px;font-weight:700;min-width:0}
+.toc-grid a:hover{background:var(--yellow)}
+.toc-grid a i{font-style:normal;font-family:var(--f-num);font-size:24px;width:44px;flex:none}
+.toc-grid a small{margin-left:auto;font-family:var(--f-en);font-size:22px;color:var(--mute);font-weight:600}
+
+/* doodles */
+.dd{position:absolute;pointer-events:none;z-index:1;color:var(--line);fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dd .y{fill:var(--yellow);stroke:var(--line)}
+.on .dd path,.on .dd circle,.on .dd polyline{stroke-dasharray:1200;animation:draw 1.6s ease-out both}
+@keyframes draw{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+.on .hd,.on .bd>*,.on .ch-text,.on .cv-t{animation:up .6s cubic-bezier(.2,.7,.2,1) both}
+.on .bd>*:nth-child(2){animation-delay:.08s}
+.on .bd>*:nth-child(3){animation-delay:.16s}
+@keyframes up{from{transform:translateY(16px);opacity:.15}to{transform:none;opacity:1}}
+
+/* ---------- chrome: progress, nav, toc drawer ---------- */
+.prog{position:fixed;left:0;top:0;height:5px;background:var(--yellow);width:0;z-index:50;box-shadow:inset 0 -1.5px 0 var(--line);transition:width .3s}
+.topbar{position:fixed;left:0;top:0;z-index:40;display:flex;gap:10px;align-items:center;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 16px 0 max(16px,env(safe-area-inset-left,0px))}
+.navb{font:inherit;font-size:17px;font-weight:700;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--line)}
+.navb:hover{background:var(--yellow)}
+.navb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.topbar .cur{display:none}
+.cur{font-family:var(--f-hand);font-size:18px;color:var(--mute);max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pager{position:fixed;right:0;bottom:0;z-index:40;display:flex;gap:8px;align-items:center;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) 16px}
+.pager .navb{width:44px;padding:0;justify-content:center}
+.pager .cnt{font-family:var(--f-num);font-size:16px;background:var(--card);border:2px solid var(--line);border-radius:999px;height:44px;display:inline-flex;align-items:center;padding:0 14px;font-variant-numeric:tabular-nums;box-shadow:3px 3px 0 var(--line)}
+.drawer{position:fixed;inset:0;z-index:60;display:flex}
+.drawer[hidden]{display:none!important}
+.drawer .scrim{flex:1;background:rgba(20,20,20,.35)}
+.drawer .pane{order:-1;width:min(460px,92vw);height:100%;background:var(--paper);border-right:2.5px solid var(--line);display:flex;flex-direction:column;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 18px calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));gap:12px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;
+  animation:slin .25s ease-out}
+@keyframes slin{from{transform:translateX(-30px);opacity:.4}}
+.pane-hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pane-hd b{font-size:24px;font-weight:900}
+.pane input{font:inherit;font-size:17px;width:100%;padding:11px 14px;border:2px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+.pane input:focus{outline:3px solid var(--yellow);outline-offset:1px}
+.tocl{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+.tocl details{background:var(--card);border:2px solid var(--line);border-radius:6px}
+.tocl summary{cursor:pointer;list-style:none;display:flex;gap:12px;align-items:center;padding:11px 14px;font-weight:900;font-size:18px}
+.tocl summary::-webkit-details-marker{display:none}
+.tocl summary i{font-style:normal;font-family:var(--f-num);font-size:16px;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;background:var(--paper)}
+.tocl details.now summary i{background:var(--yellow)}
+.tocl summary small{margin-left:auto;font-family:var(--f-en);font-size:18px;color:var(--mute)}
+.tocl ol{list-style:none;margin:0;padding:0 8px 10px 14px;display:flex;flex-direction:column}
+.tocl ol a{display:flex;gap:10px;padding:7px 8px;border-radius:4px;color:var(--ink);text-decoration:none;font-size:16px;line-height:1.35}
+.tocl ol a:hover{background:var(--yellow-soft)}
+.tocl ol a.now{background:var(--yellow);font-weight:700}
+.tocl ol a span{font-family:var(--f-num);font-size:13px;color:var(--mute);width:30px;flex:none;padding-top:2px}
+.keys{font-size:14px;color:var(--mute);line-height:1.5}
+.keys kbd{font-family:var(--f-num);font-size:12px;border:1.5px solid var(--line);border-radius:4px;padding:1px 6px;background:var(--card)}
+
+/* ---------- reading mode (phones / small windows) ---------- */
+body.mob .slide{height:auto;overflow:visible;border-bottom:2px dashed #c9c7c0}
+body.mob .stage{position:relative;left:auto;top:auto;width:auto;height:auto;transform:none;padding:84px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));gap:18px}
+body.mob .hd h2{font-size:28px}
+body.mob .kick{font-size:16px}
+body.mob .bd,body.mob .quiz,body.mob .ch .stage,body.mob .cv .stage{flex-direction:column;gap:18px}
+body.mob .pts li{font-size:19px;grid-template-columns:20px 1fr;gap:10px}
+body.mob .pts li::before{width:14px;height:14px;border-width:2px}
+body.mob .pts.dense li{font-size:18px}
+body.mob .col-img,body.mob .gal{grid-template-columns:1fr 1fr!important;grid-template-rows:none!important;gap:12px}
+body.mob .col-img.g1,body.mob .gal.g1{grid-template-columns:1fr!important}
+body.mob .ph img,body.mob .ph video{height:auto;max-height:46vh;flex:none}
+body.mob .ph figcaption{font-size:16px}
+body.mob .cols,body.mob .steps,body.mob .links,body.mob .tips,body.mob .toc-grid{grid-template-columns:1fr!important;grid-template-rows:none!important}
+body.mob .sort{grid-template-columns:1fr 1fr;grid-template-rows:none}
+body.mob .card{min-height:120px}
+body.mob .card .w{font-size:22px}
+body.mob .card .res{font-size:16px}
+body.mob .colc{padding:16px}
+body.mob .colc h3{font-size:22px}
+body.mob .colc .pts li{font-size:17px}
+body.mob .colc .ph{max-height:none}
+body.mob .steps li b{font-size:20px}
+body.mob .steps li span{font-size:16px}
+body.mob .steps li::before{width:40px;height:40px;font-size:20px}
+body.mob .steps.chain li::after{display:none}
+body.mob .flow{font-size:16px}
+body.mob .note{font-size:18px}
+body.mob table.t{font-size:15px}
+body.mob .qq{font-size:24px}
+body.mob .qopt{font-size:19px;padding:12px 14px}
+body.mob .qopt .k{width:36px;height:36px;font-size:17px}
+body.mob .qwhy{font-size:18px}
+body.mob .big .q{font-size:34px}
+body.mob .big .s{font-size:20px}
+body.mob .bar{grid-template-columns:110px 1fr 56px;font-size:15px;gap:8px}
+body.mob .bar .v{font-size:15px}
+body.mob .bar .tr{height:20px}
+body.mob .chip{font-size:16px;padding:5px 12px}
+body.mob .tip h4{font-size:20px}
+body.mob .tip ul{font-size:16px}
+body.mob .ch-no{font-size:80px}
+body.mob .ch-no small{font-size:26px}
+body.mob .ch-t{font-size:40px}
+body.mob .ch-d{font-size:20px}
+body.mob .ch-list span{font-size:15px}
+body.mob .ch-art,body.mob .cv-art{min-height:300px;width:100%;flex:none}
+body.mob .cv-t h1{font-size:52px}
+body.mob .cv-t .tag{font-size:26px}
+body.mob .cv-t .who{font-size:19px;flex-wrap:wrap}
+body.mob .cv-t .hint{font-size:17px}
+body.mob .toc-grid{grid-auto-flow:row}
+body.mob .toc-grid a{font-size:17px}
+body.mob .lk b{font-size:19px}
+body.mob .lk .qr{width:150px;height:150px}
+body.mob .pnum{right:16px;bottom:10px;font-size:18px}
+body.mob .dd{display:none}
+body.mob .cur{display:none}
+</style>
+
+</head><body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="d-loop" viewBox="0 0 300 120"><path d="M5 90 C 60 20, 90 110, 130 60 S 170 -5, 150 40 S 210 110, 295 30"/></symbol>
+  <symbol id="d-check" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34"/><polyline points="24,41 36,53 58,28"/></symbol>
+  <symbol id="d-burst" viewBox="0 0 120 120"><path d="M10 100 L60 20 M10 100 L95 45 M10 100 L110 85 M10 100 L40 12"/></symbol>
+  <symbol id="d-arrow" viewBox="0 0 200 120"><path d="M10 100 C 40 20, 120 10, 170 50"/><path d="M150 32 L172 52 L146 62"/></symbol>
+  <symbol id="d-star" viewBox="0 0 160 160"><path d="M80 8 L96 60 L152 62 L106 92 L124 148 L80 114 L36 148 L54 92 L8 62 L64 60 Z"/></symbol>
+  <symbol id="d-wave" viewBox="0 0 400 60"><path d="M0 30 Q 25 0 50 30 T 100 30 T 150 30 T 200 30 T 250 30 T 300 30 T 350 30 T 400 30"/></symbol>
+</svg>
+
+<div class="prog" id="prog"></div>
+<div class="topbar">
+  <button class="navb" id="tocBtn" aria-controls="drawer" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>目錄</button>
+  <a class="navb" href="slides.pdf" target="_blank" rel="noopener" style="text-decoration:none">下載 PDF</a><span class="cur" id="cur"></span>
+</div>
+<div class="pager">
+  <button class="navb" id="upBtn" aria-label="上一頁"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+  <span class="cnt" id="cnt">1 / 1</span>
+  <button class="navb" id="dnBtn" aria-label="下一頁"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
+<div class="drawer" id="drawer" hidden>
+  <div class="scrim" id="scrim"></div>
+  <nav class="pane" aria-label="簡報目錄">
+    <div class="pane-hd"><b>課程目錄</b><button class="navb" id="tocClose" aria-label="關閉目錄">關閉</button></div>
+    <input id="tocQ" type="search" placeholder="搜尋頁面，例如：拐杖、吞嚥、扶手" aria-label="搜尋頁面">
+    <div class="tocl" id="tocl"></div>
+    <div class="keys"><kbd>↓</kbd><kbd>↑</kbd> 或滑動換頁　<kbd>T</kbd> 開關目錄　<kbd>Home</kbd><kbd>End</kbd> 首尾頁</div>
+  </nav>
+</div>
+
+<main id="deck"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+/* ================= CONTENT ================= */
+const CH=[];   // chapters
+const SL=[];   // slides
+let curCh=0;
+function chap(no,t,en,o){CH.push({no,t,en,first:SL.length});curCh=CH.length-1;SL.push(Object.assign({type:'ch',no,t,en,ch:curCh},o));}
+function S(type,o){o.type=type;o.ch=curCh;SL.push(o);}
+
+/* ---------- 開場 ---------- */
+CH.push({no:0,t:'開場',en:'Intro',first:0});
+SL.push({type:'cover',ch:0});
+SL.push({type:'toc',ch:0,t:'課程地圖'});
+
+/* ---------- CH1 認識身心障礙者 ---------- */
+chap(1,'認識身心障礙者','Who we serve',{d:'先看懂服務對象是誰、有哪些身分與福利，照顧才會找到對的資源。',img:'s1_0',list:['人口比例','障礙類別','福利身分','服務資源']});
+S('quiz',{t:'先猜猜看',q:'身心障礙者大約占台灣人口的比例是？',opts:['1%','5%','10%'],ans:[1],why:'約 120 萬人，大約每 20 人就有 1 位。你服務的個案、鄰居、家人中，其實很常見。'});
+S('bars',{t:'各類障礙族群分布',k:'2022 年統計',rows:[['肢體障礙',32.0,1],['慢性精神障礙',11.1,1],['聽覺機能障礙',10.8,1],['心智障礙（自閉症、智能障礙）',10.2,1],['失智症',5.8,1],['視覺障礙',4.5,1],['其他類別合計',25.6,0]],note:'本次課程<b>聚焦黃色六類</b>：類別繁多，照顧重點從最常遇到的對象開始。',img:'s3_0'});
+S('cols',{t:'社會福利怎麼分？',k:'福利身分',n:3,cols:[
+  {h:'身心障礙證明',pts:['依 ICF 新制鑑定與需求評估','可申請生活補助、輔具補助、交通優待等','有效期限到期前要重新鑑定']},
+  {h:'重大傷病卡',pts:['健保身分，免部分負擔','與身障證明是兩套制度','有卡不一定有身障證明']},
+  {h:'長期照顧對象',pts:['失能身障者、65 歲以上失能長者等','照管專員評估 CMS 等級','可使用居家服務、復能、輔具、喘息']}],note:'同一個人可能同時具備三種身分，服務可以<b>疊加</b>使用。'});
+S('gal',{t:'身障證明與重大傷病卡長這樣',k:'福利身分',imgs:[{f:'s6_0',c:'身心障礙證明（正反面）'},{f:'s7_0',c:'兩種卡證，用途不同'}],pts:['證明上看得到<b>障礙類別、等級、ICD 診斷</b>與重新鑑定日期','重新鑑定日期快到時，提醒家屬提早預約','證明遺失或資料變更，到戶籍地區公所辦理']});
+S('gal',{t:'身障者可以用到的資源',k:'福利資源',imgs:[{f:'s8_0',c:'經濟、支持服務、就業、稅賦減免'},{f:'s9_0',c:'需求評估後三類福利項目'}],pts:['<b>經濟</b>｜生活補助、保險費補助、租金補貼','<b>支持服務</b>｜居家照顧、日間照顧、輔具、交通','<b>就業</b>｜職業重建窗口、支持性就業','<b>稅賦減免</b>｜所得稅特別扣除、牌照稅減免','有疑問可撥 <mark>1957 福利諮詢專線</mark>']});
+
+/* ---------- CH2 復能觀念 ---------- */
+chap(2,'復能觀念','Reablement',{d:'復健練的是能力，復能找回的是生活。照服員是復能最重要的陪伴者。',img:'s41_0',list:['復健 vs 復能','活動分析','衰弱者運動','自立支援','復能 20 小撇步']});
+S('cols',{t:'復能 vs 復健：不一樣的思考',k:'核心觀念',n:2,cols:[
+  {h:'復健 <span class="tag">能力過程</span>',pts:['肌力、耐力、活動度','協調、平衡、心肺體力','注意力、記憶力','疼痛、麻痺、水腫處理'],img:['s11_0']},
+  {h:'復能 <span class="tag">功能目標</span>',hi:1,pts:['吃飯、穿衣、洗澡盥洗','走路外出、搭交通工具','煮飯備餐、購物逛街','旅遊休閒、閱讀學習'],img:['s11_1']}],note:'復健問「哪裡不好」，復能問「<b>他想做什麼、怎麼做得到</b>」。'});
+S('quiz',{t:'投票：如果是你中風了',q:'下面哪一項，對你的生活影響比較大？',opts:['腳沒有力氣，影響走路','無法外出，到自己想去的地方'],ans:[1],tagA:['復健思維','復能思維'],why:'選 1 是「復健思維」，選 2 是「復能思維」。大多數人在意的是能不能去想去的地方，這就是復能的目標。'});
+S('sort',{t:'練習：哪些是「復能」的描述？',k:'點卡片看答案',cards:[['肌力不足','b'],['不能打牌','a'],['無法穿脫衣物','a'],['無法吃飯','a'],['無法走路','a'],['平衡變差','b'],['不想外出','a'],['腳抬不高','b']],A:'復能：生活活動',B:'復健：身體能力'});
+S('pts',{t:'活動分析：人 × 職能 × 環境',k:'找到行動方法',pts:['<span class="ld">先看人</span><span class="ds">身體、心理、情緒、認知能力</span>','<span class="ld">再看活動（職能）</span><span class="ds">他要做的事有哪些步驟、哪一步卡住</span>','<span class="ld">最後看環境</span><span class="ds">空間、動線、家人、社區資源</span>','<span class="ld">組合出行動方法</span><span class="ds">輔具・環境・策略・資源・轉念・訓練</span>'],imgs:['s14_0'],chips:['輔具','環境','策略','資源','轉念','訓練']});
+S('cols',{t:'復能 = 訓練 + 支持',k:'長期的支持',n:2,cols:[
+  {h:'訓練',pts:['在日常活動中練習，不只在治療室','動作拆小、一次練一點','讓個案自己做，照服員「陪做不代做」']},
+  {h:'支持',hi:1,pts:['態度與策略：給時間、給選擇','輔具與環境：讓做得到變容易','照顧者與生活安排：把練習放進作息']}],note:'目標：<b>復能成效 ↑</b>，同時 <b>照顧壓力與負擔 ↓</b>。'});
+S('steps',{t:'較衰弱身障者的復能運動',k:'從最小的進步開始',steps:[['提升坐的時間','能坐就不要躺，從床邊坐 5 分鐘開始'],['提升站立時間','扶穩固桌面或助行器，站著刷牙、洗手'],['提升坐站次數','每次起身都是一次肌力訓練'],['提升走路距離與時間','從房間到客廳，再到門口、到巷口']],chain:1,note:'每天記錄「多坐 5 分鐘、多站 1 次」，讓進步看得見。'});
+S('pts',{t:'中重度智能障礙者建議的運動',k:'功能性訓練',pts:['<span class="ld">坐站肌力訓練</span><span class="ds">椅子高度由高到低調整難度</span>','<span class="ld">地面取物肌力訓練</span><span class="ds">撿球、撿沙包，練下肢與核心</span>','<span class="ld">交替踏椅平衡訓練</span><span class="ds">踏台階或矮凳，左右交替</span>','<span class="ld">低衝擊跳躍骨密訓練</span><span class="ds">小跳、踮腳，刺激骨質</span>','<span class="ld">爬樓梯、走路訓練</span><span class="ds">搭配扶手，從少量開始</span>'],imgs:['s17_0','s17_2']});
+S('big',{t:'自立支援是什麼？',k:'定義',q:'復能 ≠ 自己靠自己獨立生活 ≠「能力好」',s:'自立支援的真正意思是：<mark>自主決定生活，不被限制</mark>。即使需要協助，也能選擇怎麼過自己的一天。',img:'s18_0'});
+S('gal',{t:'提升功能能力：日常生活活動 ADLs',k:'他每天要做哪些事',imgs:[{f:'s19_0',c:'ADLs 男性版'},{f:'s19_1',c:'ADLs 女性版'}],pts:['<b>基本 ADL</b>｜進食、穿脫衣、如廁、洗澡、移位、行走','用圖卡和個案一起勾選：<mark>哪些自己做、哪些想再做</mark>','依性別與生活習慣調整項目']});
+S('gal',{t:'工具性日常生活 IADLs 與健康管理',k:'他每天要做哪些事',imgs:[{f:'s20_0',c:'生活事務 IADLs'},{f:'s20_1',c:'健康管理'}],pts:['<b>IADL</b>｜購物、備餐、家務、交通、理財、使用電話','<b>健康管理</b>｜服藥、量血壓、回診、運動','照服員可觀察：哪些事家人代勞太多']});
+S('gal',{t:'休閒活動與社會參與',k:'他每天要做哪些事',imgs:[{f:'s21_0',c:'休閒活動'},{f:'s21_1',c:'社會參與'}],pts:['<b>休閒</b>｜看電視、聽音樂、園藝、宗教、手作','<b>社會參與</b>｜找朋友、上教會廟宇、據點、志工','生活不只吃飯洗澡，<mark>有意義的活動</mark>才是復能的動力']});
+
+/* ---------- CH3 生活參與 ---------- */
+chap(3,'生活參與與資源','Participation',{d:'障礙不等於只能待在家。交通、運動、醫療與權利，都有路可走。',img:'s30_0',list:['輪椅移動','交通工具','開車','運動休閒','醫療服務']});
+S('quiz',{t:'想一想',q:'只剩一隻腳可以動的長輩，可以自己推輪椅移動嗎？',opts:['可以','不可以'],ans:[0],why:'可以！偏癱者常用「單手單腳驅動」：好手推輪圈、好腳在地面划行控制方向。座椅高度要調低到好腳能踩實地面。'});
+S('gal',{t:'身心障礙者權利公約 CRPD',k:'他們的權利',imgs:[{f:'s23_0',c:'CRPD 保障身心障礙者的權利'},{f:'s24_0',c:'職業重建窗口・就業服務資源'}],pts:['身障者和每個人一樣，有<b>參與社會、工作、休閒</b>的權利','需要的協助叫「合理調整」，不是特權','想工作可找<mark>職業重建窗口</mark>，評估後轉介就業服務']});
+S('gal',{t:'搭乘大眾運輸',k:'交通參與',imgs:[{f:'s25_0',c:'身心障礙購票窗口'},{f:'s26_0',c:'公車無障礙斜板'},{f:'s27_0',c:'台鐵第七節無障礙車廂'}],g:'g3',pts:['身障者與一位必要陪伴者可享<b>半價優待</b>','公車可請司機放<b>斜板</b>，輪椅固定後再開車','火車可預約無障礙座位與<b>月台協助</b>']});
+S('quiz',{t:'想一想',q:'偏癱的中風患者，只剩左手左腳能用，可以開車嗎？',opts:['可以','不可以'],ans:[0],why:'經過駕駛能力評估、車輛改裝（如方向盤輔助旋鈕、左腳油門），通過考驗後是可以的。重點是評估，不是一律禁止。',side:['s29_0']});
+S('gal',{t:'運動休閒：手搖車、地板滾球',k:'身體動起來',imgs:[{f:'s30_0',c:'手搖車'},{f:'s30_1',c:'手搖車'},{f:'s31_0',c:'地板滾球'},{f:'s31_1',c:'輪椅滾球'}],g:'g4r',pts:['<b>手搖車</b>｜用上肢驅動的自行車，下肢無力也能騎','<b>地板滾球 Boccia</b>｜重度肢障也能參與的帕運項目','可詢問縣市身障體育協會的體驗活動']});
+S('gal',{t:'無障礙健身房與共融遊戲場',k:'身體動起來',imgs:[{f:'s32_0',c:'身障健身房'},{f:'s32_1',c:'板橋體育館身障健身房'},{f:'s33_0',c:'共融鞦韆'},{f:'s33_1',c:'共融遊戲設施'}],g:'g4r',pts:['身障健身房有<b>輪椅可直接使用</b>的器材','共融遊戲場讓輪椅使用者也能盪鞦韆','帶個案出門前，先查場地的無障礙設施']});
+S('gal',{t:'文化與醫療，也能無障礙',k:'社區資源',imgs:[{f:'s34_0',c:'博物館易讀本導覽手冊'},{f:'s35_0',c:'身障牙醫服務'},{f:'s35_1',c:'特殊需求者牙科'}],g:'g3',pts:['<b>易讀本</b>｜圖多字少，適合心智障礙者','<b>身障牙醫</b>｜各縣市有特殊需求者牙科門診','口腔清潔困難的個案，可主動提供就醫資訊']});
+S('gal',{t:'身障者與照顧者免費健康檢查',k:'社區資源',imgs:[{f:'s36_0',c:'身障者/照顧者免費健檢'},{f:'s37_0',c:'申請資格與流程'}],pts:['部分縣市提供<b>身障者與主要照顧者</b>免費健檢','照顧者也要被照顧：健檢是喘口氣的提醒','資格、名額每年不同，請洽各縣市衛生局']});
+S('gal',{t:'重度身障者的完整人生',k:'看見需求',imgs:[{f:'s38_0',c:'手天使：重度身障者的性需求服務'},{f:'s39_0',c:'頭部保護帽'}],pts:['重度身障者也有<b>情感與親密需求</b>，不該被忽略','照顧時尊重隱私，不取笑、不迴避','癲癇或易跌倒者可用<b>頭部保護帽</b>，降低撞傷風險']});
+S('tips',{t:'復能 20 小撇步',k:'復能＝恢復參與生活的功能',tips:[
+ ['生活態度',['改變認同自己是「病患」的想法','減少被動照顧','增加主動動作訓練']],
+ ['生活習慣',['能坐就不要躺，能站就不要坐，能走盡量走','調整作息，減少臥床時間']],
+ ['生活安排',['主動參與生活','擴大生活圈，重新參與嗜好','避免生活型態巨變']],
+ ['照顧者',['尊重自主意識','多傾聽多陪伴','多正向鼓勵','提升家庭支持','減少立即錯誤提醒，給予學習機會'],1],
+ ['生活環境',['注意生活安全','改善室內環境，調整動線']],
+ ['生活調整',['改變做事的方法','使用適合輔具']],
+ ['生活資源',['諮詢職能治療師','定期就醫追蹤慢性病','連結社會資源']]]});
+S('big',{t:'一句話記住復能',k:'請跟我再念一遍',q:'復能＝如何幫助你<mark>活得像個真人</mark>',s:'不是把人照顧得好好的躺著，而是陪他做回自己：吃想吃的、去想去的地方、做喜歡的事。',img:'s41_0'});
+
+/* ---------- CH4 生活照顧議題 ---------- */
+chap(4,'食衣住行浴樂：常見照顧議題','Daily living issues',{d:'精神障礙、心智障礙、失智症，同樣的問題可能有完全不同的原因。',img:'s42_0',list:['觀察→分析→策略','食','衣','住','行','浴','樂']});
+S('gal',{t:'生活照顧議題包含哪些？',k:'六大面向',imgs:[{f:'s42_0',c:'從一個家的生活看照顧'}],g:'g1',chips:['食','衣','住','行','浴','樂'],pts:['<b>食</b>｜進食、備餐、營養　<b>衣</b>｜穿脫、整潔、換季','<b>住</b>｜家務、安全、作息　<b>行</b>｜移動、交通、外出','<b>浴</b>｜洗澡、如廁、清潔　<b>樂</b>｜休閒、社交、睡眠'],side:1});
+S('table',{t:'同樣「不吃飯」，原因可能不一樣',k:'舉例',head:['對象','表現','可能原因','介入方向'],rows:[['精神障礙者','不吃飯','覺得食物有毒','症狀處理、澄清技巧'],['心智障礙者','不吃飯','進食儀式未完成','完成儀式、環境調整'],['失智症者','不吃飯','覺得自己吃過了','分散、轉移注意力']],flow:['觀察','功能表現','分析原因','提供策略與介入'],note:'先問「<b>為什麼</b>」，再決定「怎麼做」。'});
+const C3=(t,a,b,c)=>S('cols',{t,k:'精神・心智・失智 三類比較',n:3,dense:1,cols:[{h:'精神障礙',pts:a},{h:'心智障礙',pts:b},{h:'失智症',pts:c}]});
+C3('食：吃的議題',['症狀：被害感、妄想、暴食厭食、無動機','健康管理：飲食控制、營養不均','生活功能：烹飪、採買能力不足','藥物副作用：口水多、食慾強、手抖'],['儀式化：需要固定用餐流程與情境','認知：較難學習複雜備餐步驟','適應：缺乏彈性、偏食','生理：吞嚥與進食困難'],['認知：忘記吃過、誤食、吃幾口就離開','視知覺：找不到餐點、餐具','生理：咀嚼吞嚥困難、手功能退化']);
+C3('衣：穿的議題',['症狀：抗拒某些衣物、內衣外穿、奇裝異服','認知：冬夏搭配不宜、大小不合','生活功能：洗不乾淨、晾曬不足發霉'],['儀式化：固定穿衣流程、不肯換季','認知：整潔與外觀打理能力','感覺調節：觸覺敏感，抗拒某些材質'],['認知：正反、袖口領口、順序混淆，冷熱不宜','生理：手功能、視覺退化，扣扣子、拉拉鍊困難','BPSD：尋找不存在的衣服']);
+C3('住：居家生活議題',['症狀：無動機整理家務、干擾鄰里','生活功能：家務收納能力不足導致髒亂','認知：用電安全、雜物堆放','社交：與家人鄰里相處摩擦'],['生活功能：家務收納技巧不足','儀式化：堅持特定擺設，影響家人或動線'],['認知：自行外出走失、物品遺失藏匿','生理：防跌倒、找不到房間與廁所','BPSD：受光線、鏡面影響情緒','作息：日夜顛倒、黃昏症候群']);
+C3('行：移動與外出議題',['生活功能：路線規劃、大眾運輸使用','認知：用路安全、緊急應變','藥物副作用：小碎步、腳步拖沓、斜頸'],['儀式化：路途突發狀況、臨時改行程困難','認知：需逐步學習交通工具使用','社交：外出害怕或抗拒與人互動'],['認知：迷路走失、注意力減退','生理：防跌倒、輪椅與輔具使用','生活功能：駕駛、搭車能力退化']);
+C3('浴：洗澡與清潔議題',['症狀：因妄想、幻覺、情緒而不洗澡','生活功能：有洗但洗不乾淨','自我照顧下降：臉部、口腔、私密處'],['儀式化：在浴室很久、重複清洗','自我照顧下降：臉部、口腔、私密處','協調：動作不協調影響清洗範圍'],['認知：失用症、失認症','清潔品質下降、大小便失禁','BPSD：拒絕協助更衣沐浴、半夜洗澡']);
+C3('樂：休閒與社交議題',['症狀：動機太低或太高，持續短暫','作息：缺乏時間安排能力','社交：受症狀與語言能力影響'],['固著：堅持某種玩法、拒絕分享','安排：休閒活動單一','感覺尋求：自我刺激，可能受傷或噪音'],['認知：忘記以前會的活動、規則理解受限','生理：體耐力、操作功能下降','BPSD：動機低落；整體活動變少']);
+
+/* ---------- CH5 感官障礙 ---------- */
+chap(5,'感官障礙：視障與聽障','Vision & Hearing',{d:'看不清楚、聽不清楚，生活資訊就斷了線。照顧的關鍵是幫他接回去。',img:'s253_0',list:['低視能','標示記憶','與視障者互動','聽障溝通','視聽輔具']});
+S('pts',{t:'視覺障礙：全盲與低視能',k:'第二類 眼耳及感官功能',pts:['<span class="ld">視力值 → 調整距離</span><span class="ds">拿近一點、字放大一點</span>','<span class="ld">視野 → 調整位置</span><span class="ds">東西放在他看得到的那一側</span>','<span class="ld">顏色 → 用可辨識的顏色</span><span class="ds">避免相近色，例如白碗白飯</span>','<span class="ld">對比 → 改變對比</span><span class="ds">深色桌墊配淺色碗盤</span>','<span class="ld">光 → 舒適的燈光</span><span class="ds">亮但不刺眼，避免反光</span>'],imgs:['s51_0']});
+S('gal',{t:'標示怎麼做，比較好記？',k:'文字・圖像・圖像動作',imgs:[{f:'s52_1',c:'文字記憶 → 圖像記憶 → 圖像動作記憶'}],g:'g1',pts:['<b>文字</b>：「洗碗處」，需要識字與閱讀','<b>圖像</b>：碗的圖片，一看就懂','<b>圖像＋動作</b>：洗碗的手，記得更牢','標示貼在<mark>視線高度</mark>，字大、高對比'],side:1});
+S('pts',{t:'與視障者互動的注意事項',k:'溝通技巧',pts:['<span class="ld">口語提示要清楚</span><span class="ds">說「你右手邊 30 公分」，不說「這裡、那裡」</span>','<span class="ld">找到最佳視角</span><span class="ds">拿取方向、顏色、燈光、看得到的範圍</span>','<span class="ld">當成一般人對待</span><span class="ds">先問他想要被怎麼協助</span>','<span class="ld">善用觸覺與動作引導</span><span class="ds">讓他扶著你的手肘，你走半步前</span>'],imgs:['s54_0']});
+S('pts',{t:'聽障：聾不一定啞',k:'第二類 眼耳及感官功能',pts:['聾與啞是<b>不同器官</b>的障礙，聾不一定啞，啞也不一定聾','聽障若影響語言學習，才會造成說話不清楚','接受良好語言訓練的聽障者，<mark>也可以開口說話</mark>','不要叫他「啞巴」，也不要以為他完全聽不到'],note:'純語障或真正的啞，人數遠比聽障少。'});
+S('cols',{t:'聽障者的三種溝通方式',k:'先問他習慣怎麼溝通',n:3,cols:[
+  {h:'只用口語',pts:['戴助聽器','不會手語','聽障程度較輕'],note:''},
+  {h:'口語＋手語',hi:1,pts:['戴助聽器、人工電子耳或讀唇','口語、手語熟練度不一','程度通常較重']},
+  {h:'只用手語',pts:['完全無法口語','聽障程度極重','可用筆談、手機打字輔助']}],note:'說話時<b>面對他、放慢、嘴型清楚</b>，不需要大吼。'});
+
+/* ---------- CH6 肢體障礙與輔具選用 ---------- */
+chap(6,'肢體障礙與輔具選用','Mobility & Devices',{d:'輔具不是看病名挑的，是看他想做什麼、做不到哪一步。',img:'s67_0',list:['肢體障礙','腦性麻痺','生活輔具','選用三原則','助行器','補助流程']});
+S('cols',{t:'肢體障礙：身體與心理',k:'第七類 神經肌肉骨骼移動相關',n:2,cols:[
+  {h:'動作發展',pts:['肌肉無力、關節發炎、萎縮或脊椎彎曲','可能無法走路、獨自坐起或用雙手操作','心肺功能缺損者，不適合劇烈運動','神經系統缺損：協調不良、知覺異常']},
+  {h:'心理發展',hi:1,pts:['常處於挫折情境，自我肯定不易','外貌與姿態改變，人際互動較不安','可能出現自卑、社會適應困擾','照顧時多肯定他做得到的部分']}]});
+S('pts',{t:'腦性麻痺',k:'多重障礙',pts:['產前後<b>大腦缺氧或外傷</b>，損傷運動神經','造成協調困難，語言、動作、視聽、學習、情緒都可能受影響','動作與語言障礙最明顯','常被誤以為智能不足，<mark>其實不一定</mark>','溝通時給足夠時間，不要替他說完'],imgs:['s64_0']});
+S('cols',{t:'肢體障礙者的生活輔具',k:'六大類',n:3,dense:1,cols:[
+  {h:'坐姿擺位',pts:['適型坐墊','人體工學背靠']},
+  {h:'閱讀書寫',pts:['粗柄握筆、握筆輔具','翻書器']},
+  {h:'電腦輔具',pts:['替代鍵盤、軌跡球','嘴控、頭控、紅外線滑鼠']},
+  {h:'溝通輔助',pts:['擴大式按鍵溝通板','數位溝通板']},
+  {h:'行動輔具',pts:['手動輪椅、運動型輪椅','助行器、電動站立輪椅']},
+  {h:'開關控制',pts:['擴大式按鍵','環境控制系統']}]});
+S('gal',{t:'科技輔具：讓重度障礙者也能操作',k:'生活輔具',imgs:[{f:'s63_0',c:'擴大式開關'},{f:'s63_1',c:'電腦替代輸入'},{f:'s64_0',c:'站立架'},{f:'s64_1',c:'溝通板'}],g:'g4r',pts:['一個大按鍵，就能開燈、按電鈴、說出「我要喝水」','溝通板讓說不出話的人表達需求','站立架讓無法站的人也能維持站姿']});
+S('gal',{t:'科技輔具資源',k:'生活輔具',imgs:[{f:'s65_0',c:'透過科技輔具，破除重度身心障礙者的冰封人生'}],g:'g1',pts:['民間團體提供<b>科技輔具評估與借用</b>','重度身障者也能用眼控、頭控與世界溝通','遇到需求可轉介輔具中心評估'],side:1});
+S('steps',{t:'輔具選用三原則',k:'記住這三句',steps:[['用功能選，不是用疾病選','同樣中風，有人需要四腳拐，有人需要輪椅'],['注重個別化的細節','高度、重量、收納、居家空間都要考慮'],['部分有補助，需要評估','先評估再購買，才能申請補助']]});
+S('gal',{t:'這是什麼輔具？',k:'用功能選，不是用疾病選',imgs:[{f:'s67_0',c:'前臂拐（圖片來源：Just Walkers）'}],g:'g1',pts:['<b>前臂拐</b>：由前臂與手掌共同支撐','適合下肢無力但上肢有力、需長時間使用者','比腋下拐<mark>不壓迫腋下神經</mark>'],side:1});
+S('quiz',{t:'中風要用什麼輔具呢？',q:'中風個案，下面哪一個輔具適合？',opts:['四腳拐','手部副木','踝足支架 AFO','不知道'],ans:[0,1,2],why:'都可能！要看他的功能：走路不穩用四腳拐、手攣縮用副木、垂足用 AFO。這就是「用功能選，非疾病」。',side:['s68_0','s68_1','s68_2']});
+S('pts',{t:'輔具怎麼選：看需求與功能',k:'了解人，了解事',pts:['<span class="ld">了解人</span><span class="ds">身體功能、認知、體型、使用意願</span>','<span class="ld">了解事</span><span class="ds">要用在食、衣、住、行、育、樂哪個活動</span>','<span class="ld">了解環境</span><span class="ds">室內空間、門寬、樓梯、外出路線</span>','<span class="ld">試用再決定</span><span class="ds">不合用的輔具最後只會放在角落</span>'],imgs:['s69_0'],chips:['食','衣','住','行','育','樂']});
+S('quiz',{t:'個別化的細節',q:'對衰弱長者，哪一種助行器比較安全便利？',opts:['一般助行器','前輪助行器'],ans:[1],why:'前輪助行器不用整台舉起，推著走就好，衰弱長者較省力、不易因舉起時失去平衡。',side:['s70_0','s70_1']});
+S('gal',{t:'輪式助行器，使用更安全',k:'個別化的細節',imgs:['s71_0','s71_1','s71_2','s71_3'],g:'g4r',pts:['前輪讓步態更連續，不用每步舉起','後腳的煞車套可避免溜走','高度依手腕橫紋調整']});
+S('gal',{t:'R 型助行器幫助坐到站',k:'個別化的細節',imgs:[{f:'s72_0',c:'一般助行器'},{f:'s72_1',c:'R 型（扶手彎曲）助行器'}],pts:['R 型下方的低扶手，讓<b>從坐到站</b>時有地方撐','起身時手撐低處、再換到高處握把','適合起身困難但站起後能走的人']});
+S('cols',{t:'坐站訓練：兩種方式比一比',k:'個別化的細節',n:2,cols:[
+  {h:'扶著穩固物站起',pts:['下肢訓練效果 較少','動作安全 <b>勝</b>','適合平衡差、怕跌的人'],img:['s73_1']},
+  {h:'不扶、自己站起',hi:1,pts:['下肢訓練效果 <b>勝</b>','動作挑戰較大','適合有一定能力、要進步的人'],img:['s73_2']}],note:'沒有最好，只有<b>最適合他現在的能力</b>。'});
+S('gal',{t:'如果沒有 R 型助行器',k:'個別化的細節',imgs:[{f:'s74_0',c:'照顧者協助從椅子站起四步驟'}],g:'g1',pts:['① 讓個案坐到椅子前緣，雙腳後收','② 身體前傾，鼻子超過腳尖','③ 雙手撐椅子扶手站起','④ 站穩後再握助行器，確認平衡再走'],side:1});
+S('pts',{t:'輔具補助管道',k:'部分有補助，可能需評估',pts:['<span class="ld">長期照顧給付</span><span class="ds">輔具及居家無障礙，每 3 年 4 萬元</span>','<span class="ld">身心障礙者輔具費用補助</span><span class="ds">同項目原則上 2 年內補助 4 項</span>','<span class="ld">其他管道</span><span class="ds">職災勞工、職務再設計、特殊教育補助</span>','<span class="ld">先找各縣市輔具中心</span><span class="ds">部分需專業評估，補助都要申請</span>'],links:[['長照 1966 專區','https://1966.gov.tw/LTC/'],['輔具資源入口網','https://newrepat.sfaa.gov.tw/']]});
+S('steps',{t:'輔具補助流程',k:'先申請，再購買',steps:[['身分確認','身障證明或長照 CMS 等級'],['聯絡輔具中心','或請個管員協助'],['輔具評估','治療師到宅或到中心評估'],['核定公文','拿到公文才去買'],['購買輔具','保留發票、保固'],['申請核銷','檢附單據請款']],g:'g6',chain:1,note:'最常見的錯誤：<b>先買了才去申請</b>，結果無法補助。'});
+S('links',{t:'優質輔具教育影片',k:'延伸學習',links:[['新北市輔具資源中心 YouTube','https://www.youtube.com/user/ATRCNTPC/videos','輔具使用教學影片'],['長照輔具資料庫','https://mattsue1003.github.io/long-term-care-assistive-devices-database/','愛迪樂整理'],['長照身障輔具輔助查詢','https://mattsue1003.github.io/longtermcare/','愛迪樂整理']]});
+
+/* ---------- CH7 食 ---------- */
+chap(7,'食：進食與備餐','Eating & Meal prep',{d:'自己吃一口飯，是尊嚴，也是最好的手部訓練。',img:'s81_1',list:['進食環境','手抖處理','萬用套','餐具輔具','筷子','吞嚥','備餐']});
+S('gal',{t:'讓吃飯更容易的環境',k:'進食',imgs:[{f:'s79_0',c:'高對比餐具'},{f:'s79_3',c:'光線充足'},{f:'s79_1',c:'陪伴、鄰桌用餐'},{f:'s79_2',c:'食物調整、顏色鮮豔'}],g:'g4r',pts:['<b>高對比</b>：深色餐墊配淺色碗，失智與低視能者看得清楚','<b>光線充足</b>：燈在桌面上方，不要背光','<b>鄰桌用餐</b>：坐在旁邊示範，比面對面催促有效','<b>食物鮮豔</b>：顏色多一點，引起食慾']});
+S('gal',{t:'鄰桌用餐、桌板與手取食物',k:'進食',imgs:[{f:'s80_0',c:'輪椅加桌板，吃飯擺位更穩'},{f:'s81_1',c:'Finger food 手取食物'}],pts:['坐在<b>桌邊或輪椅加桌板</b>，手肘有支撐，動作更穩','<b>Finger food</b>：做成一口大小，用手拿就能吃','適合不會用餐具、坐不住的失智者，維持自己吃的能力']});
+S('gal',{t:'進食輔具 DIY：輔助湯匙',k:'進食',imgs:[{f:'s82_0',c:'湯匙'},{f:'s82_1',c:'橡皮筋'},{f:'s82_3',c:'毛巾或海綿'},{f:'s82_4',c:'纏好加粗的握把'}],g:'g4r',pts:['家裡就有：<b>湯匙＋毛巾＋橡皮筋</b>','毛巾捲在握把上，用橡皮筋固定，握把變粗變好握','握力弱、手指無法彎曲時特別有用']});
+S('gal',{t:'市售湯匙輔具的四種設計',k:'進食',imgs:[{f:'s83_0',c:'進食湯匙輔具'}],g:'g1',chips:['加重','可彎曲','萬用套','加粗握把'],pts:['<b>加重</b>：減少手抖','<b>可彎曲</b>：手腕轉不過來時，湯匙頭可轉向嘴巴','<b>萬用套</b>：手握不住也能套在手掌','<b>加粗握把</b>：好握、省力'],side:1});
+S('steps',{t:'手抖的處理方式',k:'由近端到遠端',steps:[['加重身體重量','穿加重背心或護腕'],['加重末端重量','手腕綁加重沙包'],['加重輔具重量','使用加重湯匙、杯子'],['提升近端穩定','手肘靠桌、軀幹坐穩'],['提升遠端穩定','手腕靠在桌緣或碗邊']],g:'g5',note:'先讓<b>身體坐穩</b>，手才會穩。'});
+S('gal',{t:'神經損傷者的特殊抓握：Tenodesis',k:'進食',imgs:[{f:'s85_0',c:'TENODESIS 肌腱固定抓握'}],g:'g1',pts:['手腕<b>往上翹</b>，手指會自然彎起來夾住東西','手腕<b>往下垂</b>，手指自然打開放下','脊髓損傷者常用這個方式抓杯子','照顧時<mark>不要把手指拉直</mark>，會破壞這個抓握'],side:1});
+S('gal',{t:'萬用套的多種形式',k:'進食',imgs:['s86_0','s86_1','s86_2','s86_3','s87_0','s87_1'],g:'g6',pts:['套在手掌上，插入湯匙、牙刷、梳子、筆','手指握不住也能自己吃飯、刷牙','可用魔鬼氈自製，依手掌大小調整']});
+S('pts',{t:'高科技湯匙：Liftware',k:'進食',pts:['<span class="ld">顫抖偵測</span><span class="ds">感測手抖，自動反向抵銷</span>','<span class="ld">握把加粗</span><span class="ds">好握不易滑落</span>','<span class="ld">萬用套</span><span class="ds">可搭配手掌套使用</span>','<span class="ld">保持水平</span><span class="ds">手腕轉動時湯匙仍維持水平，不灑出</span>'],note:'適合巴金森、本態性顫抖的個案，價格較高，可先試用。'});
+S('gal',{t:'進食餐具輔具：六個設計重點',k:'進食',imgs:[{f:'s90_0',c:'杯柄延伸到桌面，好拿不倒'},{f:'s92_0',c:'碗底傾斜，食物集中一邊'},{f:'s93_0',c:'垂直碗壁，好舀不推出'}],g:'g3',chips:['底部止滑','餐盤傾斜','萬用握把','色彩應用','抓握弧度','高邊碗垂直底面']});
+S('gal',{t:'單手也能自己吃',k:'進食',imgs:[{f:'s94_0',c:'高邊盤'},{f:'s94_1',c:'擋邊碗（圖：OurObligation）'},{f:'s95_0',c:'吸盤碗＋湯匙'}],g:'g3',pts:['<b>吸盤或止滑墊</b>：碗不會跟著湯匙跑','<b>擋邊</b>：食物推到邊就能舀起','偏癱、單手使用者特別需要']});
+S('gal',{t:'筷子的使用方法',k:'進食',imgs:[{f:'s97_0',c:'How to use chopsticks'},{f:'s98_0',c:'抓握'},{f:'s98_1',c:'三指'},{f:'s98_2',c:'兩指'}],g:'g4r',pts:['筷子需要<b>手指分離動作</b>，是很好的精細動作訓練','從抓握 → 三指 → 兩指，逐步進階','不會用筷子時，先改用湯匙，不要勉強']});
+S('gal',{t:'筷子輔具種類',k:'進食',imgs:[{f:'s99_0',c:'支撐式（上端相連）'},{f:'s99_1',c:'鑷子式'},{f:'s99_2',c:'手指圈引導'}],g:'g3',pts:['<b>支撐式</b>：上端連起來，放開自動張開','<b>鑷子式</b>：像夾子一樣用','<b>手指圈</b>：引導手指擺放位置']});
+S('gal',{t:'其他進食輔具',k:'進食',imgs:[{f:'s100_0',c:'防水圍兜'},{f:'s100_1',c:'蘑菇開瓶器'},{f:'s100_2',c:'吸管杯'}],g:'g3',pts:['<b>防水圍兜</b>：保護衣服，減少換洗','<b>開瓶器</b>：握力不足也能自己開瓶','<b>吸管杯</b>：減少仰頭喝水嗆到']});
+
+S('gal',{t:'上肢手臂訓練：四腳拐、彈力帶、毛巾',k:'手部訓練',imgs:[{f:'s101_0',c:'毛巾'},{f:'s101_1',c:'彈力帶'},{f:'s101_2',c:'四腳拐也能當訓練工具'}],g:'g3',pts:['生活中的物品就是訓練器材','毛巾擦桌、彈力帶拉開，都是上肢肌力訓練','四腳拐可以練習<b>抓握與推舉</b>']});
+S('gal',{t:'好手帶壞手：棍子很幫手',k:'手部訓練',imgs:[{f:'s102_0',c:'雙手握棍，好手帶動患手'},{f:'s102_1',c:'棍子舉高、左右轉'}],pts:['雙手握一根棍子，<b>好手帶著患手</b>一起動','可做舉高、左右轉、前推','維持肩關節活動度，預防肩膀疼痛與攣縮']});
+S('gal',{t:'手指肌力與協調訓練',k:'手部訓練',imgs:[{f:'s103_0',c:'曬衣夾'},{f:'s103_2',c:'長尾夾'},{f:'s104_0',c:'積木'},{f:'s104_1',c:'筆'},{f:'s104_2',c:'硬幣'}],g:'g5',pts:['<b>夾子</b>：由鬆到緊，練手指捏力','<b>積木、筆、硬幣</b>：撿起、翻面、轉筆，練手指協調','結合遊戲，例如把夾子夾到紙盤邊緣排顏色']});
+S('quiz',{t:'吞嚥安全',q:'哪一個姿勢比較能幫助吞嚥、減少嗆咳？',opts:['抬頭吞','低頭吞（收下巴）'],ans:[1],why:'收下巴低頭吞，可以縮小咽部空間、保護呼吸道。抬頭喝水反而容易嗆到。'});
+S('gal',{t:'斜口杯的應用',k:'吞嚥安全',imgs:[{f:'s106_0',c:'一般杯要仰頭，斜口杯不用'},{f:'s106_1',c:'紙杯剪口也能當斜口杯'}],pts:['一般杯子喝到最後，頭會往後仰，<b>容易嗆</b>','斜口杯（缺口杯）讓鼻子不卡杯緣，<mark>低頭就能喝完</mark>','可用紙杯剪一個缺口自製']});
+S('quiz',{t:'老化與吞嚥',q:'老化會讓喉頭位置容易降低，還是升高？',opts:['降低','升高'],ans:[0],why:'喉頭位置隨年齡下降，吞嚥時要抬得更高、更費力，容易吞不乾淨或嗆到。所以健口操很重要。'});
+S('gal',{t:'健口操：飯前動一動',k:'吞嚥安全',imgs:[{f:'s108_2',c:'健口瑜珈表情動作'},{f:'s109_0',c:'益口銅身操'},{f:'s109_2',c:'仰天長嘯：抬頭吐氣'}],g:'g3',pts:['飯前做 3–5 分鐘：<b>嘴唇、舌頭、臉頰、脖子</b>','發「ㄆㄚ、ㄊㄚ、ㄎㄚ」音，練口腔肌肉','可帶個案一起做，當作開飯的儀式']});
+S('steps',{t:'備餐：一餐要經過哪些步驟？',k:'備餐',steps:[['菜單規劃',''],['依食譜進行',''],['知道一餐份量',''],['找到食物',''],['烹飪器具使用',''],['準備食物',''],['打開罐頭、寶特瓶',''],['倒出需要的食材',''],['準備及收拾餐桌',''],['儲存剩餘食物',''],['烹飪區清潔','']],g:'g6x',note:'把備餐拆成步驟，找出他<b>卡在哪一步</b>，那一步才需要協助。'});
+S('gal',{t:'備餐的難易分級',k:'備餐',imgs:['s112_0','s112_1','s112_2','s112_3','s112_4','s112_5','s112_6','s112_7','s112_8','s112_9','s112_10','s112_11'],g:'g12',chips:['簡單冷食','複雜冷食','簡單熱食','複雜熱食'],pts:['<b>簡單冷食</b>：泡麥片、吐司抹醬','<b>複雜冷食</b>：做三明治、沙拉','<b>簡單熱食</b>：泡麵、煮水餃','<b>複雜熱食</b>：炒菜、燉湯'],side:0});
+S('gal',{t:'一些省能小技巧',k:'備餐',imgs:[{f:'s113_2',c:'坐著準備'},{f:'s113_0',c:'使用簡易食譜'},{f:'s113_1',c:'浸泡髒盤子'},{f:'s113_3',c:'減少垃圾'}],g:'g4r',pts:['<b>坐著準備</b>：用高腳椅，省力又安全','<b>簡易食譜</b>：步驟少、圖多','<b>浸泡髒盤子</b>：不用用力刷','<b>減少垃圾</b>：用量剛好，少整理']});
+S('gal',{t:'廚房裡的輔具',k:'備餐',imgs:[{f:'s114_0',c:'坐姿備餐'},{f:'s114_1',c:'輪椅可進入的流理台'},{f:'s114_2',c:'坐著煮飯'},{f:'s115_0',c:'切丁器'},{f:'s116_0',c:'單手料理板'}],g:'g5',pts:['<b>單手料理板</b>：釘子固定食材，單手也能切','<b>切丁器</b>：壓一下就切好，不用拿刀','流理台下方淨空，輪椅可以靠近']});
+S('gal',{t:'傳送食物：從廚房到餐桌',k:'備餐',imgs:['s117_2','s117_4','s117_0','s117_1'],g:'g4r',pts:['拿助行器時雙手沒空，<b>餐車</b>或<b>助行器托盤</b>幫忙運送','不要一手拿碗一手扶牆走，最容易跌倒','東西少量多次運送']});
+
+/* ---------- CH8 照顧者自我保護 ---------- */
+chap(8,'照顧者的身體保護','Protect your back',{d:'照顧別人之前，先學會保護自己的腰。',img:'s122_0',list:['髖鉸鍊','彎一腳','伸展','護腰']});
+S('pts',{t:'安全注意事項：Hip hinge 髖鉸鍊',k:'省力照顧技巧',pts:['用<b>髖關節</b>彎曲與伸展，脊椎保持挺直','彎曲一腳、伸直一腳，或弓箭步','鎖定髖關節，讓脊椎保持中立','必要時穿戴護腰，<mark>髂嵴是關鍵</mark>'],imgs:['s121_0']});
+S('cols',{t:'Hip hinge 的六個重點',k:'對照自己的姿勢',n:2,cols:[
+  {h:'姿勢',pts:['後腦杓、上背、尾椎成一直線','膝蓋微彎','雙腳平均分配力量']},
+  {h:'出力',hi:1,pts:['核心穩定出力','臀大肌為主要出力肌群','後腳筋會有點延展感']}],img:'s121_0'});
+S('vid',{t:'髖鉸鍊：上半身成一直線',k:'示範影片',v:'vid/v1.mp4',p:'vid/v1.jpg',pts:['示範：使用<b>滑步手套</b>移動床上個案','上半身維持一直線，不要彎腰','力量來自腿與臀部']});
+S('gal',{t:'彎一腳，保護你的腰',k:'生活應用',imgs:[{f:'s122_0',c:'洗碗不再腰痠背痛'},{f:'s123_0',c:'一腳彎放床上，腰更直'}],pts:['照顧前，<b>彎曲一腳膝蓋</b>靠在床上','洗碗時一腳踩矮凳，腰自然挺直','<mark>腰更直、不傷腰</mark>']});
+S('gal',{t:'為什麼會有保護作用？',k:'生活應用',imgs:[{f:'s124_0',c:'一腳踩高'},{f:'s124_1',c:'✕ 彎腰 ／ ✓ 踩凳'},{f:'s125_0',c:'弓箭步也有同樣效果'}],g:'g3',pts:['一腳抬高時，骨盆向後轉，<b>減少腰椎前彎</b>','腰部肌肉不用一直出力撐住','弓箭步也能達到同樣效益']});
+S('gal',{t:'平時的伸展：舒緩腰部不適',k:'生活應用',imgs:[{f:'s126_0',c:'單腳抱膝'},{f:'s126_1',c:'雙腳抱膝'}],pts:['躺著<b>抱膝伸展</b>，每次 20–30 秒','單腳、雙腳交替','下班後、睡前做，放鬆一天的腰']});
+S('gal',{t:'護腰怎麼穿才有效？',k:'護腰穿戴方法',imgs:[{f:'s127_0',c:'護腰'},{f:'s128_0',c:'髂嵴位置：護腰要包住這裡'}],chips:['位置','鬆緊','時機','寬度'],pts:['<b>位置</b>：下緣包住<mark>髂嵴（骨盆兩側最高點）</mark>','<b>鬆緊</b>：吸氣後能放進一指','<b>時機</b>：搬抬時才穿，平時要拿掉','<b>寬度</b>：後側較寬，支撐較好']});
+
+/* ---------- CH9 轉移位 ---------- */
+chap(9,'行：轉移位技巧','Transfers',{d:'能自己移位的人，生活圈就大一圈。好的技巧讓個案出力、照顧者省力。',img:'s134_0',list:['特製輪椅','移位板','椅子轉位法','人體蹺蹺板','雙腰帶','移位機','跌倒起身']});
+S('table',{t:'特製型輪椅的附加功能',k:'扶手、腳靠可掀開',head:['','移位','仰躺','空中傾倒'],rows:[['設計','扶手、腳踏墊可掀、可拆','髖關節角度變大','髖關節角度不變'],['好處','方便側向轉移位','可避免褥瘡、可輔助躺姿平移','可避免褥瘡、可防止乘坐者下滑']],imgs:['s129_0','s129_1','s129_2']});
+S('gal',{t:'床上移位：滑布與移位板',k:'示範',imgs:[{f:'vid/v2.jpg',c:'國興衛視：調整病患在床上的位置',raw:1},{f:'s132_0',c:'移位板：床與輪椅之間搭橋'}],pts:['<b>移位滑布</b>：減少摩擦，一個人也能把個案往上移','<b>移位板</b>：搭在床與輪椅之間，滑過去不用抬','輪椅扶手要<b>可拆</b>，移位板才放得進去']});
+S('vid',{t:'移位滑布示範',k:'示範影片・台灣安寧緩和護理學會',v:'vid/v3.mp4',p:'vid/v3.jpg',pts:['滑布對摺放在身體下方','照顧者站在要移動的方向','用重心轉移，不用手臂硬拉']});
+S('gal',{t:'椅子轉位法（依賴型）',k:'轉位技巧',imgs:[{f:'s133_0',c:'利用右手把臀部抬起來'},{f:'s133_1',c:'慢慢坐回自己的椅子上'}],pts:['照顧者坐在個案對面的椅子上','讓個案上身趴在照顧者身上，<b>臀部離開座面</b>','照顧者轉動身體，帶個案旋轉坐到另一張椅子'],links:[['影片：椅子轉位法','https://www.youtube.com/watch?v=lTtDY2vXpC4']]});
+S('gal',{t:'人體蹺蹺板（依賴型）',k:'轉位技巧',imgs:[{f:'s134_0',c:'利用身體前傾，臀部自然離床'}],g:'g1',pts:['個案頭往<b>前下方</b>傾，臀部像蹺蹺板一樣翹起','照顧者不用抬，只要引導重心','臀部離開後，往輪椅方向轉'],side:1});
+S('gal',{t:'雙腰帶轉移位（依賴型）',k:'轉位技巧',imgs:[{f:'s135_1',c:'抓腰帶，不拉手臂'}],g:'g1',side:1,pts:['照顧者與個案<b>都繫腰帶</b>','照顧者抓個案的腰帶，個案扶照顧者腰帶','不拉手臂、不抱腋下，避免肩膀受傷']});
+S('gal',{t:'Sit pivot transfer：坐姿旋轉轉位',k:'轉位技巧',imgs:[{f:'s136_0',c:'坐姿旋轉轉位步驟'},{f:'s136_1',c:'坐姿旋轉轉位實拍'}],pts:['輪椅放在個案<b>好側</b>，夾角 30–45 度','坐到前緣、身體前傾，好手扶輪椅<b>對側扶手</b>','臀部抬起旋轉坐入，確認坐深坐正']});
+S('pts',{t:'可拆扶手與腳靠很關鍵',k:'轉移位・防受傷',pts:['扶手掀起，移位時<b>不用把人抬高越過扶手</b>','腳靠拆開，雙腳才能踩地、照顧者才能靠近','少抬一點，就少一分<mark>受傷風險</mark>'],imgs:['s129_0']});
+S('cols',{t:'坐姿水平轉位技巧',k:'轉移位',n:2,cols:[
+  {h:'高度差',pts:['照顧者以高跪姿在輪椅前協助','可用移位板','讓長輩抓扶穩固處，預防下滑'],img:['s138_0']},
+  {h:'用力方向',hi:1,pts:['誘發技巧在臀部側方','以「斜上方」方向推','長輩比較容易做出臀部側移動作'],img:['s138_1']}]});
+S('table',{t:'懸吊式移位機',k:'移位輔具',head:['','移動式','固定式','軌道式'],rows:[['適合空間','寬敞空間','空間較狹小','依軌道規劃'],['移動範圍','可在室內移動','只提供兩點間移動','移動範圍較大']],imgs:['s139_0','s139_1','s139_2'],note:'完全無法承重、體重重的個案，用移位機是保護<b>雙方</b>。'});
+S('gal',{t:'上下樓梯：爬梯機與座椅電梯',k:'移位輔具',imgs:['s140_0','s140_1','s140_2','s140_3'],g:'g4r',pts:['<b>履帶式爬梯機</b>：輪椅直接上下樓梯','<b>樓梯升降椅</b>：沿扶手軌道移動','需評估樓梯寬度、轉角與操作者訓練']});
+S('gal',{t:'腰帶：防跌倒與防受傷',k:'移位腰帶',imgs:[{f:'s141_0',c:'背帶式'},{f:'s141_1',c:'移位腰帶'},{f:'s142_1',c:'輕握腰帶就能控制重心'},{f:'s142_0',c:'步行時站在患側後方'}],g:'g4r',pts:['抓腰帶，比拉衣服、拉手臂<b>更穩更安全</b>','步行時站在個案<b>患側後方</b>，手抓腰帶','快跌倒時順勢讓他慢慢坐下，不要硬撐']});
+S('steps',{t:'跌倒了怎麼辦？',k:'自己起身的步驟',steps:[['美人魚坐','側坐，用手撐地'],['四足跪','雙手雙膝著地'],['單膝跪','好腳往前踩'],['手撐腳出力','扶穩固椅子站起']],chain:1,imgs:['s143_0'],note:'先檢查有沒有受傷、頭暈，<b>不要急著拉起來</b>。'});
+S('vid',{t:'長輩跌倒，沒有椅子怎麼起身？',k:'示範影片',v:'vid/v4.mp4',p:'vid/v4.jpg',pts:['照顧者在旁引導，不硬拉','善用家中低矮穩固的物品','起身後先坐著休息再走']});
+
+/* ---------- CH10 拐杖與助行器 ---------- */
+chap(10,'行：拐杖與助行器','Canes & Walkers',{d:'一支拐杖用對方向、調對高度，就能少一次跌倒。',img:'s148_1',list:['C 形缺口','四腳拐','高度測量','上下樓梯','助步車']});
+S('quiz',{t:'一般拐杖容易混淆',q:'拐杖握把的 C 形缺口，要朝哪邊？',opts:['朝前','朝後'],ans:[0,1],why:'一般單點拐杖的握把缺口<b>前後沒有差別</b>，握得舒服就好。真正要注意方向的是「四腳拐底座」。',side:['s145_0','s145_2']});
+S('gal',{t:'四腳拐：底部 C 形缺口要朝外',k:'使用注意事項',imgs:[{f:'s148_0',c:'C 形缺口朝外'},{f:'s148_1',c:'缺口朝外才不會踢到'},{f:'s148_2',c:'C 形缺口朝外'}],g:'g3',pts:['四腳拐底座的缺口要<b>朝外</b>（離開身體）','缺口朝內，走路時腳容易<mark>踢到拐杖腳</mark>而絆倒','底座較寬的一側放外側，較穩']});
+S('quiz',{t:'四腳拐可以爬樓梯嗎？',q:'四腳拐的底座，可以放在樓梯上使用嗎？',opts:['可以','要看底座大小與階面寬度'],ans:[1],why:'小底座的四腳拐若能四腳都放在同一階上才安全；大底座放不下就不要用，改扶扶手或換單點拐。',side:['s147_0','s147_1']});
+S('pts',{t:'拐杖與扶手高度測量三原則',k:'高度與手腕橫線對齊',pts:['<span class="ld">與大轉子同高</span><span class="ds">大腿外側骨頭最突出的地方</span>','<span class="ld">與手腕橫線對齊</span><span class="ds">手自然垂下，手腕橫紋的高度</span>','<span class="ld">手肘彎曲約 20 度</span><span class="ds">握住時手肘微彎，才推得出力</span>'],imgs:['s149_0','s149_3'],note:'扶手高度也用同樣原則，太高太低都會讓肩膀或腰受力。'});
+S('big',{t:'上下樓梯口訣',k:'拐杖、助行器都適用',q:'好腳先帶你<mark>上樓</mark>，壞腳先帶你<mark>下樓</mark>',s:'上樓：好腳先上，拐杖與壞腳再跟上。下樓：拐杖與壞腳先下，好腳再跟下。照顧者站在個案<b>下方</b>保護。'});
+S('gal',{t:'助行器上下樓梯',k:'有扶手時才建議',imgs:[{f:'s152_0',c:'摺疊助行器上下樓梯'},{f:'s153_0',c:'橫向助行器上下樓梯'}],pts:['摺疊助行器：收起後一手扶扶手、一手拿助行器','橫向擺放：助行器兩腳放在上一階，一手握扶手','每一步都<b>站穩再移動</b>，旁邊要有人保護','風險高，能力不足時改用其他方式']});
+S('gal',{t:'拐杖椅與拐杖傘',k:'外出好幫手',imgs:[{f:'s154_0',c:'拐杖椅：注意坐的方向'},{f:'s155_0',c:'拐杖傘（圖：老事兒）'},{f:'s155_1',c:'拐杖傘（圖：樂齡網）'}],g:'g3',pts:['<b>拐杖椅</b>：走累可以坐，但要坐在<mark>正確方向</mark>，不然會翻','<b>拐杖傘</b>：下雨也有支撐','都只能當輔助，不能取代正式拐杖']});
+S('gal',{t:'前臂拐與腋下拐',k:'使用方法',imgs:[{f:'s156_0',c:'前臂拐'},{f:'s156_1',c:'腋下拐：腋下留 2–3 指'}],pts:['<b>前臂拐</b>：前臂套環在手肘下方，手握把出力','<b>腋下拐</b>：頂端離腋下約 2–3 指，<mark>用手撐，不用腋下撐</mark>','腋下長期受壓會傷到神經']});
+S('gal',{t:'助步車與學步車',k:'行動輔具',imgs:[{f:'s157_0',c:'助步車'},{f:'s157_1',c:'購物型助步車'},{f:'s158_0',c:'學步車'},{f:'s158_1',c:'學步車'},{f:'s158_2',c:'學步車'}],g:'g5',pts:['<b>助步車</b>：四輪、有座椅與置物籃，可外出購物','<b>學步車</b>：前臂支撐、包圍式，適合平衡較差者','使用前確認<b>煞車</b>，坐下前一定要鎖住']});
+
+/* ---------- CH11 輪椅 ---------- */
+chap(11,'行：輪椅擺位、推行與上下車','Wheelchair',{d:'坐得正，才能吃得好、呼吸好、不長褥瘡。',img:'s175_0',list:['下滑處理','骨盆帶','座墊','擺位輔具','推輪椅','電動輪椅','上下車']});
+S('pts',{t:'長輩從輪椅下滑怎麼辦？',k:'下滑處理六方法',pts:['<span class="ld">身體前彎推膝</span><span class="ds">讓個案前傾，照顧者推膝蓋讓臀部往後</span>','<span class="ld">左右擺盪</span><span class="ds">重心左右轉移，一邊一邊往後挪</span>','<span class="ld">四手交扣、三膝鼎立</span><span class="ds">兩人或一人協助的穩定姿勢</span>','<span class="ld">善用輪椅與輔具</span><span class="ds">止滑墊、骨盆帶、可調背墊</span>'],links:[['影片：下滑處理','https://www.youtube.com/watch?v=RcP_wUOSvWg']]});
+S('gal',{t:'單向止滑坐墊',k:'預防下滑',imgs:[{f:'s161_1',c:'CareWatch 座椅用單向止滑坐墊'},{f:'s161_0',c:'只能往後滑、不能往前滑'}],pts:['坐墊只能<b>往後滑</b>，往前會卡住','照顧者往後挪人時很省力','個案自己不容易滑出座位']});
+S('gal',{t:'輪椅骨盆帶與背墊',k:'擺位',imgs:[{f:'s162_0',c:'正確的骨盆帶位置'},{f:'s162_2',c:'骨盆帶太高，坐姿容易前滑'},{f:'s163_0',c:'可調式背墊，支撐點在髂後上棘'}],g:'g3',pts:['<b>骨盆帶</b>：綁在<mark>髂前上棘下方</mark>、大腿根部，約 45 度斜拉','綁太高變成勒肚子，個案還是會滑','<b>可調式背墊</b>：支撐在髂後上棘，坐姿更挺','（圖片資料來源：行動輔具怎麼選怎麼用，楊忠一 2019）']});
+S('gal',{t:'輪椅的種類與收折',k:'輪椅',imgs:['s164_0'],g:'g1',pts:['一般型、輕量型、高背型、空中傾倒型','選擇時看：<b>座寬、座深、座高、重量</b>','常需搬上車的家庭，要考慮收折大小'],side:1});
+S('table',{t:'輪椅座墊怎麼選？',k:'減壓與舒適',head:['種類','優點','缺點'],rows:[['泡棉座墊','經濟便宜','悶熱、耐用性差'],['氣囊式座墊','空氣流動形成弧面，增加接觸面積、降低壓力','需定期檢查充氣量'],['凝膠式座墊','久坐溫度不易上升','材質較重']],imgs:['s165_0','s165_1','s165_2'],note:'久坐、有褥瘡風險的人，座墊比輪椅本身還重要。'});
+S('gal',{t:'擺位輔具',k:'擺位',imgs:['s166_0','s166_1','s166_2','s167_0','s167_1','s167_2'],g:'g6',pts:['<b>擺位椅、桌板、軟墊</b>：維持身體對稱與穩定','<b>副木 Splint</b>：手、腳踝固定在功能位置，預防攣縮','副木要定時拆下檢查皮膚是否紅腫']});
+S('steps',{t:'推輪椅：高低差、斜坡、縫隙',k:'推輪椅技巧',steps:[['前推','平台或小高低差，翹起前輪推上'],['後推','下坡、下台階時，倒退慢慢下'],['翹起前推','過門檻、縫隙，先翹前輪再推']],imgs:['s170_0']});
+S('gal',{t:'推輪椅技巧：平台、門檻、縫隙',k:'推輪椅技巧',imgs:[{f:'s170_1',c:'平台'},{f:'s171_0',c:'門檻'},{f:'s171_1',c:'門檻'},{f:'s172_0',c:'縫隙'}],g:'g4r',pts:['翹前輪：腳踩後方<b>傾倒桿</b>，手往下壓','下台階：<b>倒退</b>，後輪先下','（圖片來源：行動輔具怎麼選怎麼用，楊忠一 2019）']});
+S('gal',{t:'不同環境，協助推輪椅的安全模式',k:'推輪椅技巧',imgs:[{f:'s173_0',c:'照顧者依不同環境協助推輪椅的安全模式'}],g:'g1',pts:['上坡：<b>前推</b>','下坡：<b>倒退</b>，陡坡一定要倒退','門檻、縫隙：<b>翹起前輪</b>','不確定時，寧可多找一個人幫忙'],side:1});
+S('gal',{t:'輪椅手拉車與上下樓梯',k:'推輪椅技巧',imgs:[{f:'s174_0',c:'輪椅手拉車：草地碎石也能走'},{f:'s175_0',c:'雙人手推輪椅上下樓梯'}],pts:['<b>輪椅手拉車</b>：加裝前輪拉把，戶外不平路面好走','<b>雙人上下樓梯</b>：一人在上拉握把，一人在下抓車架','抓<b>固定的車架</b>，不要抓可拆的扶手、腳踏'],links:[['影片：輪椅上下樓梯','https://www.youtube.com/watch?v=Yv_yyWpO2JY']]});
+S('cols',{t:'電動輪椅怎麼選？',k:'機械使用',n:2,cols:[
+  {h:'輕便型',pts:['可收折、可搬上車','適合室內與短距離','電池容量較小']},
+  {h:'馬力型',hi:1,pts:['爬坡力強、續航長','較重、不易搬運','適合戶外長距離']}],note:'最高限速 <b>10 公里/小時</b>，電池大約可走 <b>20 公里</b>。'});
+S('gal',{t:'電動輪椅的訓練與使用',k:'機械使用',imgs:[{f:'s178_1',c:'手/電模式一鍵切換：離合器'},{f:'s178_0',c:'站在搖桿旁，危險時立即撥開'},{f:'s179_0',c:'輪椅電動車頭'}],g:'g3',pts:['先在空曠處練習<b>撥開搖桿</b>：輕推、慢放','學會調整<b>離合器</b>：沒電時切手動推','輪椅車頭：手動輪椅加裝電動車頭，外出更省力','長照與身障補助可申請租賃或購買，大幅減輕負擔']});
+S('gal',{t:'站立式電動輪椅與手動版邦邦車',k:'機械使用',imgs:[{f:'s180_0',c:'站立式電動輪椅'},{f:'s180_1',c:'坐到站的過程'}],g:'g1',pts:['<b>站立式電動輪椅</b>：坐著移動，需要時可站起來','站立有助於<b>骨密度、血液循環、排便</b>','也讓他可以平視他人、拿高處物品'],side:1});
+S('gal',{t:'上下車技巧',k:'上下車',imgs:[{f:'s182_0',c:'上車四步驟'}],g:'g1',pts:['① 座椅往後移，騰出足夠空間','② 背對座椅，慢慢坐下','③ 一手扶車頂、一手扶座椅，頭放低','④ 臀部轉入，雙腳再移進車內'],side:1});
+S('gal',{t:'上下車輔具',k:'上下車',imgs:[{f:'s183_0',c:'Stander 上下車輔助握把（附手電筒）'},{f:'s184_0',c:'旋轉坐墊'},{f:'s185_0',c:'後座椅安全把手'}],g:'g3',pts:['<b>輔助握把</b>：插在車門鎖扣，提供穩固支撐點','<b>旋轉坐墊</b>：坐下後轉 360 度，雙腳輕鬆轉入','<b>後座把手</b>：掛在頭枕，後座上下車有地方拉']});
+
+/* ---------- CH12 居家無障礙 ---------- */
+chap(12,'住：居家無障礙與通用設計','Home environment',{d:'環境改一點，照顧就輕一點，跌倒也少一點。',img:'s190_0',list:['物品取得','視覺提示','地面防滑','門與門檻','斜坡板','扶手']});
+S('quiz',{t:'想一想',q:'輪椅可以搭手扶梯嗎？',opts:['可以','不可以'],ans:[1],why:'不可以！輪椅搭手扶梯非常容易翻覆，請改搭電梯。嬰兒車、助行器也一樣。'});
+S('gal',{t:'物品放在容易拿的地方',k:'物品取得',imgs:[{f:'s188_0',c:'肩膀到膝蓋之間最好拿'}],g:'g1',pts:['常用物品放在<b>肩膀與膝蓋之間</b>的高度','輪椅使用者可及範圍更小，要再低一點','太高要墊腳、太低要彎腰，都容易跌倒'],side:1});
+S('gal',{t:'超常刺激：善用視覺化',k:'視覺提示',imgs:[{f:'s189_0',c:'普通的甜甜圈'},{f:'s189_1',c:'色彩更強烈的甜甜圈'},{f:'s190_0',c:'紅色扶手與馬桶座，一眼就看到'}],g:'g3',pts:['<b>超常刺激</b>：比原本更鮮明的刺激，更能吸引注意','用在居家：<mark>扶手、馬桶座、門框</mark>用強烈對比色','失智、低視能者更容易找到、用對']});
+S('gal',{t:'善用標記提示',k:'視覺提示',imgs:[{f:'s191_1',c:'文字 → 圖像 → 圖像動作'},{f:'s192_0',c:'垃圾桶'},{f:'s192_1',c:'洗碗精'},{f:'s192_2',c:'抽屜標示'}],g:'g4r',pts:['在垃圾桶、洗碗精、抽屜貼上<b>大字或圖示</b>','標示讓個案自己找得到，減少一直問','貼在<b>視線高度</b>，不要太多，重點就好']});
+S('gal',{t:'地面防滑措施',k:'地面防滑',imgs:['s193_0','s193_1','s193_2','s193_3','s193_4','s193_5'],g:'g6',pts:['<b>止滑墊、止滑條、止滑地墊</b>','浴室、廚房、樓梯是跌倒熱點','<b>防滑藥劑</b>：直接處理地面，不改變外觀']});
+S('gal',{t:'通道與地面防滑',k:'地面防滑',imgs:[{f:'s194_0',c:'防滑條的使用須知'},{f:'s195_0',c:'奈米蝕刻止滑施工流程'}],pts:['防滑條方向與<b>行進方向垂直</b>','每條間距<b>不超過 4 公分</b>','黏貼範圍要涵蓋活動區域','奈米蝕刻：地面微孔產生吸盤效應，遇水更止滑']});
+S('gal',{t:'反光與夜光：晚上也看得到',k:'地面防滑',imgs:[{f:'s196_0',c:'反光 vs 夜光（圖：反光屋）'},{f:'s197_0',c:'樓梯夜光止滑條'}],pts:['<b>反光材質</b>：要有光源照射才會亮','<b>夜光材質</b>：吸收光能，熄燈後自己發光','樓梯邊緣、夜間如廁動線最需要']});
+S('gal',{t:'門與出入口',k:'門',imgs:[{f:'s198_0',c:'橫拉門'},{f:'s198_1',c:'浴室拉門'},{f:'s199_0',c:'施工前'},{f:'s199_1',c:'施工後'}],g:'g4r',pts:['採用<b>橫拉門</b>，不建議內推門或外拉門','內推門：人倒在門後就打不開','外拉門：輪椅、助行器要退後才能開']});
+S('gal',{t:'門檻：拆除或做斜坡',k:'門',imgs:[{f:'s200_0',c:'門檻加裝斜坡 vs 不當設計'},{f:'s201_0',c:'門檻剔除'},{f:'s202_1',c:'截水溝取代門檻'}],g:'g3',pts:['門的下方<b>不要有門檻</b>','有落差就拆除，或加裝<b>具防滑效果的斜坡道</b>','浴室用<b>截水溝</b>取代門檻，擋水又不絆腳']});
+S('gal',{t:'斜坡板百百種',k:'突破多重障礙',imgs:[{f:'s203_0',c:'可攜式斜坡板'},{f:'s203_1',c:'門檻斜坡'},{f:'s203_2',c:'模組式斜坡'},{f:'s204_1',c:'軌道內坎式落地窗'}],g:'g4r',pts:['<b>可攜式</b>：外出、上車用','<b>門檻斜坡</b>：小高低差','<b>落地窗</b>：選內坎式軌道，地面平整']});
+S('gal',{t:'斜坡板的安全提醒',k:'推行者的位置',imgs:[{f:'s205_0',c:'推行者走在平地上，下盤較穩'}],g:'g1',pts:['推行者走在<b>平地上</b>，比較費力但重心較穩','不怕斜坡板被雨淋濕而滑倒','斜坡比例建議 <b>1:12</b>，太陡就要兩人協助'],side:1});
+S('gal',{t:'扶手的種類與應用',k:'扶手',imgs:['s206_0','s206_1','s206_2','s206_3','s206_4'],g:'g5',chips:['高度','材質','距離','功能','顏色'],pts:['<b>高度</b>：約與大轉子同高','<b>材質</b>：防滑、不冰手','<b>距離</b>：離牆面約 4–5 公分，手能握滿','<b>顏色</b>：與牆面對比，一眼看到']});
+S('gal',{t:'馬桶扶手的建議尺寸',k:'扶手',imgs:[{f:'s207_0',c:'實際浴室的扶手'},{f:'s208_0',c:'扶手高度 600–850 mm'},{f:'s208_1',c:'縱向與橫向扶手位置'}],g:'g3',pts:['橫向扶手高度約 <b>60–85 公分</b>','縱向扶手距馬桶前緣約 <b>20–30 公分</b>','好側一定要有扶手，起身才有地方撐']});
+S('gal',{t:'扶手裝不對，反而造成障礙',k:'扶手',imgs:['s209_0','s209_1','s209_2','s211_0','s211_1'],g:'g5',pts:['扶手太遠：坐在馬桶上<b>摸不到</b>','扶手擋住：輪椅、助行器進不去','吸盤式扶手<mark>不能承重</mark>，只能輔助平衡']});
+S('gal',{t:'吸盤扶手與臉盆扶手',k:'扶手',imgs:[{f:'s210_0',c:'T 吸盤防滑扶手'},{f:'s210_1',c:'吸盤式浴室安全扶手'},{f:'s212_0',c:'臉盆扶手'},{f:'s213_0',c:'裝錯的臉盆扶手？！'}],g:'g4r',pts:['吸盤扶手會脫落，只能輕扶，不能撐全身','臉盆扶手要能讓輪椅<b>靠近</b>，不是擋在前面','安裝前想清楚：他<b>從哪裡來、怎麼用</b>']});
+S('gal',{t:'床邊扶手與三段起身扶手',k:'扶手',imgs:[{f:'s214_0',c:'床邊扶手'},{f:'s214_1',c:'床邊扶手協助起身'},{f:'s215_0',c:'三段起身扶手'},{f:'s215_1',c:'多功能起身助行器'}],g:'g4r',pts:['<b>床邊扶手</b>：翻身、坐起、站起都有支撐','<b>三段起身扶手</b>：低、中、高三段握把，一段一段撐起','不用打牆施工，租屋族也能用']});
+
+/* ---------- CH13 浴與如廁 ---------- */
+chap(13,'浴：洗澡與如廁','Bathing & Toileting',{d:'浴室是家裡最容易跌倒的地方，也是最需要尊重隱私的地方。',img:'s216_0',list:['洗澡椅','便盆椅','過門檻','如廁姿勢','進出浴缸']});
+S('gal',{t:'洗澡及如廁輔具',k:'浴室輔具',imgs:[{f:'s216_0',c:'浴室輔具配置'},'s217_6','s217_7','s217_0','s217_1','s217_2'],g:'g6',pts:['馬桶扶手、洗澡椅、走入式浴缸、輪椅式洗頭洗澡椅','長柄刷、洗背刷：自己洗得到背和腳','依個案能力選擇，不是越多越好']});
+S('table',{t:'便盆椅（洗澡椅）怎麼選？',k:'如廁輔具',head:['類型','一般型','附加輪子','可跨馬桶','可躺式'],rows:[['適合','避免走到廁所的困難','方便照顧者推移','廁所空間狹小者，也可輔助起身','使用躺姿平移、無法維持坐姿者']],imgs:['s218_0','s218_1','s218_2','s218_3'],cmp:1});
+S('vid',{t:'斜坡板不一定安全',k:'示範影片',v:'vid/v5.mp4',p:'vid/v5.jpg',pts:['便盆椅輪子小，斜坡板上容易<b>卡住或往前翻</b>','坡度、寬度都要確認','有時「技巧」比「設備」更安全']});
+S('gal',{t:'便盆椅過門檻技巧 2 招',k:'如廁輔具',imgs:[{f:'s220_1',c:'便盆椅過門檻'}],g:'g1',pts:['<b>高門檻：倒退抬高</b>','　倒退著走，先抬後輪過門檻','<b>低門檻：前撇鞋卡翹起</b>','　用腳卡住後方，翹起前輪推過去'],links:[['影片：便盆椅過門檻','https://www.youtube.com/watch?v=zHPkRpXQqmg']],side:1});
+S('gal',{t:'哪個如廁姿勢肺活量最大？',k:'實證研究',imgs:[{f:'s221_0',c:'A 直坐　B 前傾扶桌　C 前傾＋腳墊高'}],g:'g1',pts:['<b>上肢有支撐的前傾姿勢</b>，呼吸功能較好','前傾扶桌，腹部較好出力，排便較順','可在馬桶前放<b>桌板或扶手</b>、腳下墊小凳'],note:'Tashiro et al. (2020). J Phys Ther Sci, 32(5), 332-336.',side:1});
+S('gal',{t:'善用桌板與馬桶周邊輔具',k:'如廁輔具',imgs:[{f:'s222_0',c:'可調高度桌板'},{f:'s222_1',c:'如廁前傾支撐桌'},{f:'s222_2',c:'馬桶前方支撐板'},{f:'s223_0',c:'免治馬桶'},{f:'s223_2',c:'擦屁股輔具'}],g:'g5',pts:['<b>前方桌板</b>：前傾時有地方撐','<b>免治馬桶</b>：手功能不佳也能清潔','<b>長柄擦拭輔具</b>：手搆不到時用']});
+S('gal',{t:'洗澡機與入浴輔具',k:'浴室輔具',imgs:[{f:'s224_0',c:'坐姿洗澡機'},{f:'s224_1',c:'入浴升降輔具'}],pts:['重度失能者可用<b>坐姿洗澡機、入浴升降椅</b>','減少照顧者彎腰與抬舉','部分可租賃，先評估空間與水電']});
+S('gal',{t:'進出浴缸：維持坐姿最安全',k:'浴室',imgs:[{f:'s225_0',c:'浴缸扶手'},'s226_0','s226_1','s226_2','s226_3'],g:'g5',pts:['先<b>坐在浴缸邊或轉位板</b>上','一腳一腳抬進去，再慢慢坐下','全程維持坐姿，不要站著跨浴缸']});
+S('gal',{t:'從輪椅進出浴缸',k:'浴室',imgs:['s227_0','s227_1','s227_2','s227_3'],g:'g4r',pts:['輪椅靠近浴缸、鎖煞車','先坐到浴缸邊的轉位板','一腳一腳移入，再滑坐進去']});
+S('gal',{t:'無障礙空間改造案例',k:'參考作品',imgs:[{f:'s228_0',c:'無障礙空間作品：浴室、樓梯、玄關'}],g:'g1',pts:['參考實際改造案例，和家屬討論更具體','改造前先評估：<b>個案能力、照顧方式、預算</b>','長照居家無障礙補助，可與輔具共用 3 年 4 萬額度'],side:1});
+
+/* ---------- CH14 衣 ---------- */
+chap(14,'衣：穿脫衣輔助','Dressing',{d:'自己穿上一件衣服，可能要十分鐘。多等十分鐘，就是復能。',img:'s241_1',list:['穿衣輔具','環境規劃','患側先穿','上衣','褲子','鞋襪']});
+S('gal',{t:'穿衣輔具',k:'穿衣輔助',imgs:[{f:'s230_0',c:'穿衣桿'},{f:'s230_1',c:'長鞋拔'},{f:'s230_2',c:'穿襪器'},{f:'s230_3',c:'扣釦器'},{f:'s230_4',c:'長柄取物夾'}],g:'g5',pts:['<b>穿衣桿</b>：勾衣服、拉褲子','<b>穿襪器、長鞋拔</b>：彎不下腰也能穿','<b>扣釦器</b>：手指不靈活也能扣']});
+S('gal',{t:'穿衣的環境規劃',k:'穿衣輔助',imgs:[{f:'s231_0',c:'用文字或圖片標示收納'},{f:'s231_1',c:'衣物標籤及圖示引導'},{f:'s231_2',c:'善用翹腳與板凳'}],g:'g3',pts:['衣櫃抽屜<b>用文字或圖片標示</b>','衣物前後加標籤，分得出正反','<b>坐著穿</b>，善用翹腳與板凳，比站著安全']});
+S('gal',{t:'長柄取物夾與扣釦器',k:'穿衣輔助',imgs:[{f:'s232_0',c:'取高處物品'},{f:'s232_1',c:'撿地上物品'},{f:'s232_2',c:'取物夾'},{f:'s233_0',c:'扣釦器'},{f:'s233_1',c:'扣釦器使用'}],g:'g5',pts:['<b>取物夾</b>：不用彎腰、不用墊腳','<b>扣釦器</b>：鐵圈穿過釦眼，勾住釦子拉出來','練習幾次就能自己扣好']});
+S('big',{t:'穿衣口訣',k:'偏癱者穿脫衣',q:'<mark>患側先穿</mark>，好側先脫',s:'穿的時候先穿不方便的那隻手腳，脫的時候先脫好的那側。坐著穿，穩定又安全。'});
+S('gal',{t:'穿套頭上衣',k:'患側先穿',imgs:['s235_0','s235_1','s235_2','s236_0','s236_1','s236_2','s236_3'],g:'g7',pts:['衣服放在大腿上，背面朝上','先把<b>患側手</b>穿進袖子、拉到肩膀','再穿好側手，最後套頭、拉平']});
+S('gal',{t:'穿前開襟上衣',k:'患側先穿',imgs:['s237_0','s237_1','s237_2','s237_3'],g:'g4r',pts:['先穿<b>患側手</b>，袖子拉到肩膀','衣服從背後繞過來','好手往後找袖口穿進去，拉平扣好']});
+S('gal',{t:'坐著穿褲子',k:'患側先穿',imgs:['s240_0','s240_1','s240_2','s241_0','s241_1','s241_2','s241_3'],g:'g7',pts:['<b>翹腳</b>：患腳翹到好腳上，先穿患腳','再穿好腳，褲子拉到大腿','站起來（或側身）把褲子拉上腰']});
+S('gal',{t:'站起拉褲與床上穿褲',k:'患側先穿',imgs:['s242_0','s242_1','s242_2','s242_3','s239_0','s245_0','s245_1'],g:'g7',pts:['站起前確認<b>腳下踩穩、前方有支撐</b>','平衡不好的人，可在<b>床上</b>側翻拉褲','沙發上穿：靠背支撐，比較不會往後倒']});
+S('gal',{t:'用穿衣桿穿褲子',k:'穿衣輔具',imgs:['s243_0','s243_1','s243_2','s243_3','s244_0','s244_1','s244_2','s244_3'],g:'g8',pts:['彎不下腰、髖關節置換後的人特別適合','用穿衣桿勾住褲頭，放到腳邊','腳伸進去後，用桿子把褲子拉上來']});
+S('gal',{t:'穿襪子與穿鞋',k:'穿衣輔具',imgs:['s246_0','s246_1','s246_2','s246_3','s247_1','s248_0','s248_2','s248_3'],g:'g8',pts:['<b>穿襪器</b>：襪子套上，腳伸入，拉繩往上拉','<b>魔鬼氈鞋</b>：不用綁鞋帶','<b>長鞋拔</b>：坐著也能把鞋穿好']});
+
+/* ---------- CH5b 視聽輔具（放在感官後半）---------- */
+chap(15,'視覺與聽覺輔具','Vision & Hearing aids',{d:'看得清楚、聽得清楚，生活才接得上。',img:'s257_1',list:['放大鏡','擴視機','白手杖','多焦眼鏡','助聽器','輔聽器']});
+S('gal',{t:'視覺輔具',k:'視覺輔助',imgs:[{f:'s250_0',c:'單筒望遠鏡：看遠方站牌'},{f:'s250_1',c:'閱讀放大鏡'},{f:'s251_0',c:'手持放大鏡'},{f:'s251_1',c:'桌上型擴視機'}],g:'g4r',pts:['<b>望遠鏡</b>：看站牌、看黑板','<b>放大鏡</b>：讀藥袋、報紙','<b>桌上型擴視機</b>：可調顏色、對比、倍率']});
+S('gal',{t:'擴視機：也可以用手機',k:'視覺輔助',imgs:[{f:'s252_0',c:'可攜式擴視機'},{f:'s252_1',c:'看藥罐標籤'}],pts:['<b>可攜式擴視機</b>：放大、反白、高對比','手機也能當放大鏡：相機放大、內建「放大鏡」功能','可搭配 <b>Google Lens</b> 把文字唸出來'],links:[['Google Lens 長輩使用說明','https://mattsue1003.github.io/google-lens-guide/']]});
+S('gal',{t:'白手杖與定向行動訓練',k:'視覺輔助',imgs:[{f:'s253_0',c:'白手杖使用'}],g:'g1',pts:['<b>白手杖</b>：探測前方障礙、讓別人知道他是視障者','可向縣市政府申請白手杖','<b>定向行動訓練</b>：專業人員教他走熟悉路線、搭車','照服員不要隨意<mark>移動家具位置</mark>'],side:1});
+S('gal',{t:'多焦點眼鏡怎麼看？',k:'視覺輔助',imgs:[{f:'s254_0',c:'多焦鏡片：上看遠、中間看中距離、下看近'},{f:'s255_0',c:'漸進多焦：遠、中、近都適用'}],pts:['鏡片<b>上方看遠、下方看近</b>','走樓梯時往下看，透過近用區會<mark>看不清台階</mark>','提醒長者下樓梯時低頭用上方看，或改戴單焦眼鏡']});
+S('gal',{t:'助聽輔具百百種',k:'聽覺輔助',imgs:[{f:'s257_0',c:'輔聽器'},{f:'s257_1',c:'各種助聽器'},{f:'s257_2',c:'各種助聽器'}],g:'g3',pts:['耳掛型、耳內型、耳道型、口袋型','依<b>聽損程度、手部靈活度、外觀需求</b>選擇','手不靈活的長者，選大一點、好操作的']});
+S('table',{t:'輔聽器 vs 助聽器',k:'聽覺輔助',head:['','輔聽器','助聽器'],rows:[['醫療器材','否','是'],['聽力輔助模式','標準化','客製化（訂製）'],['操作','較容易','較複雜'],['調整方式','手動操控大小聲','聽力師依個人狀態以電腦設定'],['價格','較親民（兩耳 1 萬元內）','較負擔（兩耳 2–30 萬元以上）'],['購買管道','網路、醫療器材行、助聽器公司','助聽器公司']],cmp:1,note:'購買請找<b>官方管道</b>，避免買到非正品；身障者可申請輔具補助。'});
+S('gal',{t:'復能專業團隊與助聽器資源',k:'聽覺輔助',imgs:[{f:'s58_0',c:'復能照護服務：專業團隊'},{f:'s59_0',c:'PSA 助聽器銀行'}],pts:['復能團隊有<b>聽力師、語言治療師、職能治療師</b>等','經濟困難者可洽 <b>PSA 助聽器銀行</b>借用','發現長輩聽不清楚，先轉介評估，不要只是說大聲一點']});
+
+/* ---------- CH16 樂 ---------- */
+chap(16,'樂：睡眠、休閒與手作','Rest & Leisure',{d:'睡得好、玩得開心，情緒穩了，照顧就順了。',img:'s276_0',list:['睡眠衛生','休閒平衡','情緒安撫','娃娃治療','團康','手作活動']});
+S('cols',{t:'休息睡眠：趨吉與避凶',k:'睡眠衛生',n:2,cols:[
+  {h:'趨吉：多做',pts:['白天曬太陽','作息規律','臥室涼爽安靜','睡前減少亮度','睡前做靜態活動'],pic:['s261_0','s261_1','s261_2','s261_3','s261_4']},
+  {h:'避凶：少做',hi:1,pts:['睡前一小時開始「睡前儀式」','午睡不超過 20 分鐘','睡前不飲食','床上不看藍光（手機、平板）'],pic:['s262_0','s262_1','s262_2','s262_3']}]});
+S('gal',{t:'睡前泡腳',k:'睡眠衛生',imgs:[{f:'s263_0',c:'泡腳幫助放鬆'}],g:'g1',pts:['溫水泡腳 10–15 分鐘，幫助放鬆入睡','水溫用<b>手肘</b>試，約 40 度','糖尿病、感覺異常者<mark>特別小心燙傷</mark>'],side:1});
+S('gal',{t:'休閒及社交活動',k:'Leisure and Social Activities',imgs:['s264_0','s264_1','s265_0','s265_1','s265_2','s265_3'],g:'g6',chips:['找到興趣','生活平衡','解決問題','替代方法'],pts:['<b>找到興趣</b>：從他以前喜歡做的事開始','<b>生活平衡</b>：自我照顧、休閒、休息都要有','<b>解決問題、替代方法</b>：做不到原本的方式，就換方式做']});
+S('gal',{t:'情緒安撫玩具與居家運動',k:'休閒',imgs:[{f:'s266_0',c:'壓壓樂'},{f:'s266_1',c:'紓壓骰子'},{f:'s267_0',c:'坐姿運動'},{f:'s268_0',c:'讓運動融入居家每個角落'}],g:'g4r',pts:['<b>紓壓玩具</b>：焦躁、手閒不下來時給他手上有事做','<b>坐姿運動</b>：輪椅上也能動','把運動放在<b>日常動線</b>，看電視時也能動']});
+S('gal',{t:'互動與情緒輔具',k:'娃娃治療・感官治療',imgs:['s269_0','s269_1','s269_2','s269_3'],g:'g4r',pts:['<b>娃娃治療</b>：失智長輩照顧娃娃，找回被需要的感覺','<b>感官治療</b>：觸覺毯、香氛、音樂，安撫情緒','觀察反應，不喜歡就不要勉強']});
+S('gal',{t:'視障桌遊與團康活動',k:'休閒',imgs:[{f:'s270_0',c:'觸摸式骨牌'},{f:'s270_1',c:'點字大富翁'},{f:'s271_0',c:'《100 種樂齡活動這樣玩》'}],g:'g3',pts:['<b>視障桌遊</b>：凸點、點字、觸摸辨識','<b>團康設計</b>：規則簡單、人人有角色','可參考樂齡活動書籍，依能力調整']});
+S('gal',{t:'團康活動設計',k:'休閒',imgs:['s272_0','s272_1','s272_2','s272_3','s272_4','s272_5'],g:'g6',pts:['傳球、投籃、接力、問答都能改成坐姿版','分組合作，增加<b>社交互動</b>','準備<b>難易兩種版本</b>，能力不同都能參與']});
+S('steps',{t:'手作活動的四個原則',k:'手作活動',steps:[['簡單','步驟少，一看就懂'],['表達控制感','自己選顏色、選樣式'],['快速','一次活動內就能完成'],['有成就（美感）','完成品漂亮，願意帶回家、拍照']],g:'g4'});
+S('gal',{t:'上帝之眼：手作聊癒動大腦',k:'手作活動',imgs:[{f:'s274_0',c:'God\'s eye 上帝之眼'},{f:'s274_1',c:'長輩作品'},{f:'s274_2',c:'不同配色'}],g:'g3',pts:['兩根木棒＋毛線，壓、繞、拉、轉','練習<b>手眼協調、雙手合作、順序記憶</b>','配色自己選，每個作品都不一樣'],links:[['上帝之眼 3D 繞線教學','https://mattsue1003.github.io/gods-eye-weaving/']]});
+S('gal',{t:'皺紋紙花',k:'手作活動',imgs:['s276_0','s276_1','s276_2'],g:'g3',pts:['皺紋紙摺、捏、綁，做出花朵','練習<b>手指捏力與精細動作</b>','完成後一起拍照，成就感滿滿'],note:'教案來源：新雅文化'});
+S('gal',{t:'幸運彩鹽瓶',k:'手作活動',imgs:['s278_0','s278_1','s278_2'],g:'g3',pts:['粉筆在鹽上搓出顏色，一層一層倒進瓶子','動作簡單、色彩鮮豔，<b>重度個案也能參與</b>','注意：失智者可能誤食，鹽與粉筆要看管'],note:'教案來源：Jelly Huang'});
+
+/* ---------- CH17 照顧策略 ---------- */
+chap(17,'照顧策略與行為引導','Care strategies',{d:'不是每一次都靠說服。用對策略，讓好的行為自己發生。',img:'s285_0',list:['規則規定','制約','PBL','心流','生活安排','活動分析','EAST','行為合約','普墨克','立即影響法']});
+S('tgrid',{t:'照顧策略工具箱',k:'總覽：挑一兩個來用就好',items:[['規則規定','少、具體、正向'],['古典制約','固定訊號連結活動'],['操作制約','做到就立刻增強'],['PBL 法則','點數、獎勵、排行'],['心流','挑戰與能力平衡'],['生活安排與檢核','把活動排進作息'],['善用圖卡引導','看得到就做得到'],['提示策略','由少到多給提示'],['EAST 框架','簡單、吸引、社交、即時'],['行為合約','5W 寫下來'],['普墨克原則','先做排斥的，再做喜歡的'],['立即影響法','六個問題引動機'],['自我管理技巧','每週回顧調整'],['先觀察前因後果','行為不是無緣無故'],['策略要一致','家人、照服員用同一套']]});
+S('gal',{t:'規則規定的應用',k:'照顧策略',imgs:[{f:'s281_0',c:'把規則做成看得見的提示'},{f:'s281_1',c:'規則要簡單、正向'}],pts:['規則要<b>少、具體、正向</b>：「坐著吃飯」而不是「不要亂跑」','用圖卡或文字貼在現場','事先說好，比事後責罵有效']});
+S('gal',{t:'古典制約：鈴聲與食物',k:'照顧策略',imgs:[{f:'s282_0',c:'巴夫洛夫的狗：鈴聲＋食物 → 聽到鈴聲就流口水'}],g:'g1',pts:['把<b>固定的訊號</b>和活動連在一起','例如：放某首歌 = 要去洗澡了','重複幾次，個案聽到就知道接下來要做什麼，<mark>減少抗拒</mark>'],side:1});
+S('table',{t:'操作制約：四種結果',k:'照顧策略',head:['','喜歡的','不喜歡的'],rows:[['給予','正增強（讚美、點心）','懲罰'],['拿走','消弱（拿走他在意的）','負增強（拿掉討厭的事）']],cmp:1,note:'照顧現場<b>多用正增強</b>：做到就立刻具體稱讚，比糾正錯誤有效得多。'});
+S('cols',{t:'遊戲化：PBL 法則',k:'讓參與變好玩',n:3,cols:[
+  {h:'P｜Points',pts:['點數的機制','完成一件事就得一點','看得到累積']},
+  {h:'B｜Benefit',hi:1,pts:['獎勵的機制','點數可以換喜歡的東西或活動','獎勵要是他在意的']},
+  {h:'L｜Leaderboard',pts:['排行榜的機制','團體活動中適度比較','重點是自己和自己比']}],img:'s285_0'});
+S('pts',{t:'善用心流 Flow 理論',k:'讓人投入的五個元素',pts:['<span class="ld">目標明確</span><span class="ds">知道現在要做什麼</span>','<span class="ld">控制感</span><span class="ds">可以自己選擇、自己決定</span>','<span class="ld">挑戰和能力平衡</span><span class="ds">太難會焦慮，太簡單會無聊</span>','<span class="ld">立即明確回饋</span><span class="ds">做對馬上知道</span>','<span class="ld">喜歡的事</span><span class="ds">從他的興趣出發</span>']});
+S('table',{t:'生活安排：建立習慣才是關鍵',k:'生產性・自我照顧・休息・休閒・社交',head:['時間','調整前','調整後','時間','調整前','調整後'],rows:[['05–06','睡覺','盥洗','17–18','洗澡','洗澡'],['06–07','盥洗','早餐','18–19','晚餐','晚餐'],['07–08','早餐','電視','19–20','電視','<mark>下棋</mark>'],['08–09','電視','<mark>據點活動</mark>','20–21','電視','電視'],['09–11','休息','<mark>據點活動</mark>','21–22','盥洗','盥洗'],['11–12','中餐','中餐','22–05','睡覺','睡覺'],['12–13','休息','休息','',' ',' '],['13–14','休息','電視','','',''],['14–15','電視','<mark>找朋友聊天</mark>','','',''],['15–16','電視','<mark>學習</mark>','','',''],['16–17','散步','散步','','','']],small:1,note:'把「看電視、休息」換成有意義的活動，一天就不一樣。'});
+S('cols',{t:'如何建立健康的習慣？',k:'習慣養成',n:2,cols:[
+  {h:'微習慣',pts:['小到不可能失敗：每天站 1 分鐘','做到就打勾，累積成就感','能力上來再慢慢加量']},
+  {h:'暗時間',hi:1,pts:['利用零碎時間：等吃飯、看廣告時','看電視時順便抬腿、握球','把練習藏進原本就會做的事']}]});
+S('steps',{t:'活動分析三要點',k:'找出卡關原因',steps:[['發現困難','把活動拆成步驟，看卡在哪一步'],['釐清原因','是人、活動，還是環境造成的'],['處理原因','輔具、環境、策略、資源、轉念、訓練、生活安排']],chain:1,imgs:['s289_0']});
+S('steps',{t:'處理原因：提示化',k:'由少到多給提示',steps:[['口語提示','「接下來要拿毛巾喔」'],['視覺提示','指一下、放圖卡、擺在眼前'],['觸覺提示','輕碰他的手肘、手背'],['引導','手把手帶著做一次']],chain:1,g:'g4',imgs:['s290_0'],note:'先給<b>最少</b>的提示，做不到再往下一層。'});
+S('flow',{t:'發現困難：步驟拆解',k:'以如廁為例',flow:['走到廁所','跨門檻','馬桶座放下','脫褲子','脫內褲','坐上馬桶','肚子出力','拿衛生紙折一次','擦拭','再折一次','擦拭','丟棄','站起來','穿內褲','穿褲子','沖水','用肥皂洗手'],hl:[1,3,13],pts:['如廁看似一件事，其實有 <b>17 個步驟</b>','逐步觀察，找出真正的<mark>問題點</mark>','只在卡住的那一步協助，其他讓他自己來']});
+S('cols',{t:'處理原因：調整協助順序',k:'簡單化',n:2,cols:[
+  {h:'前面個案做，後面協助',pts:['個案完成走到廁所、脫褲、坐下','照服員協助擦拭、穿褲','適合體力在後段下降的人']},
+  {h:'前面協助，後面個案做',hi:1,pts:['照服員協助走到廁所、脫褲','個案自己完成擦拭、穿褲、洗手','結尾自己完成，<b>成就感最高</b>']}],note:'也可以搭配其他策略、輔具、資源與提示化。'});
+S('pts',{t:'催化行為改變：EAST 框架',k:'英國行為洞察小組',pts:['<span class="ld">Easy 簡化事情</span><span class="ds">步驟越少越容易做，例如把運動彈力帶放在沙發旁</span>','<span class="ld">Attractive 提升吸引力</span><span class="ds">加入喜歡的音樂、獎勵、顏色</span>','<span class="ld">Social 增加社交連結</span><span class="ds">找夥伴一起做、讓家人看見</span>','<span class="ld">Timely 增加時效性</span><span class="ds">在對的時間提醒，例如飯後馬上散步</span>']});
+S('cols',{t:'實施意向：5W 行為合約',k:'Implementation intention',n:5,cols:[
+  {h:'Why',pts:['為什麼要做']},{h:'When',hi:1,pts:['什麼時候做']},{h:'Where',pts:['在哪裡做']},{h:'What',hi:1,pts:['做什麼、做多少']},{h:'Who',pts:['和誰一起做']}],note:'範例：「為了能自己去市場（Why），我每天<b>午飯後</b>（When）在<b>客廳</b>（Where）做<b>10 次坐站</b>（What），<b>女兒陪我</b>（Who）。」寫下來、貼起來。'});
+S('cols',{t:'普墨克原則',k:'先做不喜歡的，再做喜歡的',n:2,cols:[
+  {h:'先：相對排斥的事',pts:['洗澡、復健運動、吃藥','做完這件事……']},
+  {h:'然後：相對喜歡的事',hi:1,pts:['看電視、吃點心、聊天','……就可以做喜歡的事']}],note:'「<b>先</b>洗完澡，<b>然後</b>我們來看你最喜歡的連續劇。」用喜歡的事當作<mark>完成的獎勵</mark>。'});
+S('pts',{t:'立即影響法：六個問題',k:'引發改變動機',dense:1,pts:['<span class="ld">1. 你為什麼想＿＿？</span><span class="ds">讓他說出自己的理由</span>','<span class="ld">2. 你有多想＿＿？1–10 分</span><span class="ds">自我覺察</span>','<span class="ld">3. 為什麼你沒有選更低的分數？</span><span class="ds">反差：引出他想改變的原因</span>','<span class="ld">4. 如果你已經＿＿，生活會有什麼好處？</span><span class="ds">視覺化</span>','<span class="ld">5. 這些改變為什麼對你那麼重要？</span><span class="ds">增強物</span>','<span class="ld">6. 要達到＿＿，第一步可以做什麼？</span><span class="ds">行動</span>']});
+S('steps',{t:'自我管理技巧：多溝通，提升執行率',k:'每週回顧',steps:[['完成','給予肯定，維持下去'],['部分完成','找出做到的部分，討論卡在哪'],['沒有執行','不責備，了解原因'],['更改計畫方式','目標太難就調小，換個時間或方法']],g:'g4'});
+
+/* ---------- 結尾 ---------- */
+chap(18,'結語與延伸資源','Wrap-up',{d:'今天學到的，挑一個明天就用在個案身上。',img:'s276_1',list:['重點回顧','延伸資源','聯絡我們']});
+S('pts',{t:'今天帶回家的五件事',k:'重點回顧',pts:['<span class="ld">復能看生活，不只看能力</span><span class="ds">陪做不代做，給他時間</span>','<span class="ld">同樣問題，原因不同</span><span class="ds">先觀察、分析，再給策略</span>','<span class="ld">輔具用功能選，不用疾病選</span><span class="ds">先評估、再申請、後購買</span>','<span class="ld">保護個案，也保護自己</span><span class="ds">髖鉸鍊、腰帶、移位輔具</span>','<span class="ld">環境與策略，讓好行為自然發生</span><span class="ds">提示化、步驟拆解、正增強</span>']});
+S('links',{t:'延伸資源',k:'愛迪樂整理的照顧工具',links:[['安全移轉位簡報','https://mattsue1003.github.io/safe-transfer-deck/','復能轉移位 vs 協助轉移位'],['轉移位影片資料庫','https://mattsue1003.github.io/transfer-video-library/','145 支情境影片'],['長照輔具資料庫','https://mattsue1003.github.io/long-term-care-assistive-devices-database/','輔具查詢'],['在家動一動活動庫','https://mattsue1003.github.io/home-play-library/','居家運動、認知、體智能'],['居家陪伴聊天庫','https://mattsue1003.github.io/home-chat-db/','居服員聊天話題'],['居家服務教戰手冊','https://mattsue1003.github.io/home-caregiver-3/','函釋與縣市規定']],n:3});
+S('end',{t:'感謝您的聆聽',k:'愛迪樂團隊'});
+
+/* ================= RENDER ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s);
+const IMG=f=>{if(typeof f==='string')f={f};const src=f.raw||f.f.startsWith('vid/')?f.f:('img/'+f.f+'.webp');return {src,c:f.c};};
+let rot=0;
+function ph(f,cls=''){const o=IMG(f);rot++;const r=[-1.2,.8,-.5,1.1,-.9,.4][rot%6];
+  return `<figure class="ph ${cls}" style="--r:${r}deg"><img src="${o.src}" alt="${o.c||''}" loading="lazy" decoding="async">${o.c?`<figcaption>${o.c}</figcaption>`:''}</figure>`;}
+function gridCls(n,g){if(g)return g;return n<=1?'g1':n==2?'g2':n==3?'g3':n==4?'g4':n<=6?'g6':n<=8?'g8':'g12';}
+function ptsHTML(a,dense){return `<ul class="pts${dense?' dense':''}">${a.map(x=>`<li><div>${x}</div></li>`).join('')}</ul>`;}
+function chips(a,y){return a?`<div class="chips">${a.map(c=>`<span class="chip${y?' y':''}">${c}</span>`).join('')}</div>`:'';}
+function note(n){return n?`<div class="note">${n}</div>`:'';}
+function qr(url){try{const q=qrcode(0,'M');q.addData(unescape(encodeURIComponent(url)));q.make();return q.createSvgTag({cellSize:4,margin:2,scalable:true});}catch(e){return ''}}
+function linkRow(ls){return ls?`<div class="chips">${ls.map(l=>`<a class="chip y" href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('')}</div>`:'';}
+const DD=['d-loop','d-check','d-burst','d-arrow','d-star','d-wave'];
+function doodles(i){const a=DD[i%6],b=DD[(i*7+3)%6];
+  const p1=[[1380,30,180,90],[30,780,150,90],[1420,760,130,110],[40,20,120,100]][i%4];
+  return `<svg class="dd" style="left:${p1[0]}px;top:${p1[1]}px;width:${p1[2]}px;height:${p1[3]}px" aria-hidden="true"><use href="#${a}"/></svg>`;}
+const R={};
+R.cover=()=>`<div class="cv-t"><span class="tag">Disability care · 20 hr course</span>
+  <h1>身心障礙<br><mark>日常生活</mark>支持</h1>
+  <div class="who">講師｜鍾孟修 職能治療師 <span>愛迪樂團隊</span></div>
+  <div class="hint"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v14M6 12l6 6 6-6"/></svg>往下滑動開始，或按「目錄」跳到任何一章</div></div>
+  <div class="cv-art"><div class="scrap" style="left:6%;top:4%;width:88%;height:84%;transform:rotate(-3deg)"></div>
+  <div class="sun" style="width:300px;height:300px;right:6%;top:2%"></div>
+  <div class="half" style="left:10%;top:16%;width:62%;height:62%;transform:rotate(2deg)"><img src="img/s41_0.webp" alt=""></div>
+  <div class="half color" style="right:4%;bottom:4%;width:36%;height:40%;transform:rotate(-4deg);background:#fff;padding:10px"><img src="img/s1_0.webp" alt="" style="object-fit:contain;filter:none"></div>
+  <svg class="dd" style="right:0;bottom:-30px;width:220px;height:120px"><use href="#d-loop"/></svg>
+  <svg class="dd" style="left:-4%;top:0;width:120px;height:120px"><use href="#d-burst"/></svg>
+  <div class="lk" style="position:absolute;left:-2%;bottom:2%;width:220px;transform:rotate(-3deg);padding:14px;gap:6px"><div class="qr" style="width:170px;height:170px">${qr('https://mattsue1003.github.io/disability-daily-support/')}</div><b style="font-size:20px">手機掃描看簡報</b></div></div>`;
+R.toc=()=>`<header class="hd"><span class="kick"><i></i>Course map</span><h2>課程地圖</h2></header>
+  <div class="bd"><div class="toc-grid">${CH.slice(1).map(c=>`<a href="#p${c.first+1}"><i>${String(c.no).padStart(2,'0')}</i>${c.t}<small>p.${c.first+1}</small></a>`).join('')}</div></div>`;
+R.ch=s=>{const c=CH[s.ch];return `<div class="ch-text"><div class="ch-no">${String(s.no).padStart(2,'0')}<small>${s.en}</small></div>
+  <h2 class="ch-t">${s.t}</h2><p class="ch-d">${s.d||''}</p><div class="ch-list">${(s.list||[]).map(x=>`<span>${x}</span>`).join('')}</div></div>
+  <div class="ch-art"><div class="scrap" style="left:4%;top:6%;width:84%;height:80%;transform:rotate(${s.no%2?-2:3}deg)"></div>
+  <div class="sun" style="width:240px;height:240px;${s.no%2?'right:2%;top:0':'left:0;bottom:2%'}"></div>
+  <div class="half" style="left:14%;top:14%;width:70%;height:68%;transform:rotate(${s.no%2?2:-2}deg)"><img src="img/${s.img}.webp" alt=""></div>
+  <svg class="dd" style="${s.no%2?'left:0;bottom:0':'right:0;top:0'};width:200px;height:100px"><use href="#d-loop"/></svg>
+  <svg class="dd" style="${s.no%2?'right:4%;bottom:8%':'left:6%;top:4%'};width:110px;height:110px"><use href="#${s.no%3?'d-check':'d-burst'}"/></svg></div>`;};
+function hd(s){const c=CH[s.ch];return `<header class="hd"><span class="kick"><i></i>${String(c.no).padStart(2,'0')} ${c.t}${s.k?'　·　'+s.k:''}</span><h2>${s.t}</h2></header>`;}
+R.pts=s=>{const im=s.imgs||[];return hd(s)+`<div class="bd"><div class="col-text">${ptsHTML(s.pts,s.dense)}${chips(s.chips)}${linkRow(s.links)}${note(s.note)}</div>
+  ${im.length?`<div class="col-img ${gridCls(im.length)}" style="flex:${im.length>1?1:.85}">${im.map(f=>ph(f)).join('')}</div>`:''}</div>`;};
+R.gal=s=>{const im=s.imgs||[];const g=s.g==='g6x'?'g6':gridCls(im.length,s.g);
+  if(s.side||(im.length===1&&g==='g1')){ // text beside
+    return hd(s)+`<div class="bd"><div class="col-text">${s.pts?ptsHTML(s.pts):''}${chips(s.chips,1)}${linkRow(s.links)}${note(s.note)}</div><div class="col-img ${g}" style="flex:1.15">${im.map(f=>ph(f,'tape')).join('')}</div></div>`;}
+  const style=g==='g7'?'style="grid-template-columns:repeat(7,1fr)"':'';
+  const textBlock=s.pts?`<div class="col-text" style="flex:none;gap:10px">${ptsHTML(s.pts,1).replace('class="pts dense"','class="pts dense" style="flex-direction:row;flex-wrap:wrap;gap:8px 40px"')}${linkRow(s.links)}${note(s.note)}</div>`:'';
+  return hd(s)+`<div class="bd" style="flex-direction:column;gap:22px">${chips(s.chips,1)}${im.length?`<div class="gal ${g}" ${style}>${im.map(f=>ph(f)).join('')}</div>`:''}${textBlock}</div>`;};
+R.cols=s=>hd(s)+`<div class="bd" style="flex-direction:column;gap:22px"><div class="bd" style="gap:30px">
+  <div class="cols" style="grid-template-columns:repeat(${s.n||s.cols.length},1fr)">${s.cols.map(c=>`<div class="colc${c.hi?' hi':''}"><h3>${c.h}</h3>${ptsHTML(c.pts,s.dense)}${c.img?`<div class="pic g${c.img.length}" style="grid-template-columns:repeat(${c.img.length},1fr)">${c.img.map(f=>ph(f)).join('')}</div>`:''}${c.pic?`<div class="pic" style="grid-template-columns:repeat(${c.pic.length},1fr);flex:.55">${c.pic.map(f=>ph(f)).join('')}</div>`:''}</div>`).join('')}</div>
+  ${s.img?`<div class="col-img g1" style="flex:.55">${ph(s.img,'tape')}</div>`:''}</div>${note(s.note)}</div>`;
+R.steps=s=>{const n=s.steps.length;const g=s.g==='g6x'?null:s.g;
+  let cols=g==='g6'?3:g==='g5'?5:g==='g4'?4:Math.min(n,4);if(n===11)cols=4;
+  const rows=Math.ceil(n/cols);
+  return hd(s)+`<div class="bd" style="flex-direction:column;gap:22px"><div class="bd" style="gap:30px"><ol class="steps${s.chain&&rows===1?' chain':''}" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">${s.steps.map(x=>`<li><b>${x[0]}</b>${x[1]?`<span>${x[1]}</span>`:''}</li>`).join('')}</ol>
+  ${s.imgs?`<div class="col-img g1" style="flex:.5">${s.imgs.map(f=>ph(f)).join('')}</div>`:''}</div>${note(s.note)}</div>`;};
+R.table=s=>hd(s)+`<div class="bd" style="flex-direction:column;gap:22px">${s.flow?`<div class="flow">${s.flow.map((x,i)=>`<span class="${i==3?'hl':''}">${x}</span>`).join('<em>→</em>')}</div>`:''}
+  <div class="bd" style="gap:30px"><div class="tbl-wrap"><table class="t${s.cmp?' cmp':''}${s.small?' small':''}${!s.small&&s.rows.length<=4&&!s.imgs?' tbig':''}"><thead><tr>${s.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>
+  ${s.imgs?`<div class="gal ${gridCls(s.imgs.length,s.imgs.length===4?'g4r':null)}" style="flex:.8">${s.imgs.map(f=>ph(f)).join('')}</div>`:''}${note(s.note)}</div>`;
+R.quiz=s=>hd(s)+`<div class="bd"><div class="quiz" data-ans="${s.ans.join(',')}"><div class="qbox"><div class="qq">${s.q}</div>
+  <div class="qopts">${s.opts.map((o,i)=>`<button class="qopt" data-i="${i}"><span class="k">${i+1}</span>${o}${s.tagA?`<small style="margin-left:auto;font-family:var(--f-hand);font-weight:400;font-size:.75em;color:var(--mute)" class="qa-tag" hidden>${s.tagA[i]}</small>`:''}</button>`).join('')}</div>
+  <div class="qwhy">${s.why}</div><button class="btn qshow">看答案</button></div>
+  ${s.side?`<div class="qside ${gridCls(s.side.length,s.side.length>2?'g3':null)}">${s.side.map(f=>ph(f)).join('')}</div>`:`<div class="qside" style="flex:.55;place-items:center"><svg viewBox="0 0 200 200" style="width:min(100%,360px)" aria-hidden="true"><circle cx="100" cy="100" r="86" fill="var(--yellow)" stroke="var(--line)" stroke-width="3"/><text x="100" y="138" text-anchor="middle" font-family="Archivo Black,Arial Black" font-size="120" fill="var(--ink)">?</text></svg></div>`}</div></div>`;
+R.sort=s=>hd(s)+`<div class="bd" style="flex-direction:column;gap:20px"><div class="chips"><span class="chip y">${s.A}</span><span class="chip" style="background:#dddcd6">${s.B}</span><button class="btn sall" style="margin-left:auto">全部揭曉</button></div>
+  <div class="sort">${s.cards.map((c,i)=>`<button class="card ${c[1]}"><span class="n">${i+1}</span><span class="w">${c[0]}</span><span class="res">${c[1]=='a'?'復能':'復健'}</span></button>`).join('')}</div></div>`;
+R.big=s=>hd(s)+`<div class="bd"><div class="big"><div class="q">${s.q}</div><div class="s">${s.s}</div></div>${s.img?`<div class="col-img g1" style="flex:.7">${ph(s.img,'tape')}</div>`:''}</div>`;
+R.vid=s=>hd(s)+`<div class="bd"><div class="col-text" style="flex:.8">${ptsHTML(s.pts)}</div><div class="col-img g1" style="flex:1.3"><figure class="ph" style="--r:-.6deg"><video src="${s.v}" poster="${s.p}" controls preload="none" playsinline></video></figure></div></div>`;
+R.links=s=>hd(s)+`<div class="bd"><div class="links" style="--n:${s.n||s.links.length}">${s.links.map(l=>`<a class="lk" href="${l[1]}" target="_blank" rel="noopener"><div class="qr">${qr(l[1])}</div><b>${l[0]}</b><span>${l[2]||''}</span></a>`).join('')}</div></div>`;
+R.bars=s=>hd(s)+`<div class="bd"><div class="col-text"><div class="bars">${s.rows.map(r=>`<div class="bar${r[2]?' hi':''}"><span>${r[0]}</span><div class="tr"><div class="fl" style="--w:${r[1]/32*100}%"></div></div><span class="v">${r[1].toFixed(1)}%</span></div>`).join('')}</div>${note(s.note)}</div></div>`;
+R.tips=s=>hd(s)+`<div class="bd"><div class="tips">${s.tips.map(t=>`<div class="tip${t[2]?' wide':''}"><h4><span>${t[0]}</span></h4><ul>${t[1].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}</div></div>`;
+R.tgrid=s=>hd(s)+`<div class="bd"><div class="tgrid">${s.items.map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div></div>`;
+R.flow=s=>hd(s)+`<div class="bd" style="flex-direction:column;justify-content:space-evenly"><div class="flow" style="font-size:28px;gap:16px 10px">${s.flow.map((x,i)=>`<span class="${s.hl.includes(i)?'hl':''}">${x}</span>`).join('<em>→</em>')}</div>${ptsHTML(s.pts)}</div>`;
+R.end=s=>`<div class="cv-t"><span class="tag">Thank you</span><h1>感謝您的<mark>聆聽</mark></h1>
+  <div class="who">鍾孟修 職能治療師 <span>愛迪樂團隊</span></div>
+  <div class="chips"><span class="chip">LINE　@rrg9564e</span><a class="chip y" href="https://www.facebook.com/tedandet/" target="_blank" rel="noopener">臉書粉絲專頁 ↗</a></div>
+  <div class="hint">課後問題，歡迎透過 LINE 或粉專留言詢問</div></div>
+  <div class="cv-art"><div class="scrap" style="left:6%;top:6%;width:86%;height:82%;transform:rotate(2deg)"></div>
+  <div class="sun" style="width:260px;height:260px;left:4%;top:4%"></div>
+  <div class="half color" style="left:24%;top:12%;width:44%;height:76%;transform:rotate(-2deg);background:transparent;box-shadow:none"><img src="img/s299_0.webp" alt="" style="object-fit:contain"></div>
+  <div class="lk" style="position:absolute;right:4%;bottom:8%;width:240px;transform:rotate(3deg)"><div class="qr">${qr('https://www.facebook.com/tedandet/')}</div><b>愛迪樂粉專</b></div>
+  <svg class="dd" style="right:0;top:0;width:120px;height:120px"><use href="#d-star"/></svg></div>`;
+
+const deck=$('#deck');
+deck.innerHTML=SL.map((s,i)=>{rot=i;const body=(R[s.type]||R.pts)(s);
+  const cls=s.type==='ch'?'ch':(s.type==='cover'||s.type==='end')?'cv':'';
+  return `<section class="slide ${cls}" id="p${i+1}" data-i="${i}"><div class="stage">${body}${s.type!=='ch'&&s.type!=='cover'&&s.type!=='end'?doodles(i):''}${i?`<span class="pnum">${i+1}</span>`:''}</div></section>`;}).join('');
+deck.querySelectorAll('img').forEach(im=>im.addEventListener('error',()=>{const f=im.closest('.ph');if(f)f.remove();}));
+
+/* ---------- interactions ---------- */
+deck.addEventListener('click',e=>{
+  const o=e.target.closest('.qopt');
+  if(o){const q=o.closest('.quiz');const ans=q.dataset.ans.split(',').map(Number);
+    q.querySelectorAll('.qopt').forEach(b=>{const i=+b.dataset.i;b.classList.toggle('right',ans.includes(i));b.classList.toggle('wrong',!ans.includes(i)&&b===o);});
+    q.querySelectorAll('.qa-tag').forEach(t=>t.hidden=false);q.classList.add('done');return;}
+  const sh=e.target.closest('.qshow');
+  if(sh){const q=sh.closest('.quiz');const ans=q.dataset.ans.split(',').map(Number);q.querySelectorAll('.qopt').forEach(b=>b.classList.toggle('right',ans.includes(+b.dataset.i)));q.querySelectorAll('.qa-tag').forEach(t=>t.hidden=false);q.classList.add('done');return;}
+  const c=e.target.closest('.card');if(c){c.classList.toggle('show');return;}
+  const sa=e.target.closest('.sall');if(sa){sa.closest('.bd').querySelectorAll('.card').forEach(x=>x.classList.add('show'));}
+});
+
+/* ---------- scaling & mode ---------- */
+const root=document.documentElement;
+function fit(){const w=innerWidth,h=innerHeight;const mob=w<820||h<480;document.body.classList.toggle('mob',mob);root.classList.toggle('snap',!mob);
+  root.style.setProperty('--s',Math.min(w/1600,h/900));}
+addEventListener('resize',fit);fit();
+
+/* ---------- nav ---------- */
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;
+function go(i){i=Math.max(0,Math.min(slides.length-1,i));slides[i].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});}
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>.5){const i=+e.target.dataset.i;setCur(i);}});},{threshold:[.5,.75]});
+slides.forEach(s=>io.observe(s));
+function setCur(i){if(slides[cur])slides[cur].classList.remove('on');cur=i;const s=slides[i];s.classList.add('on');
+  $('#cnt').textContent=(i+1)+' / '+slides.length;$('#prog').style.width=((i+1)/slides.length*100)+'%';
+  const ch=CH[SL[i].ch];$('#cur').textContent=ch.no?String(ch.no).padStart(2,'0')+' '+ch.t:'';
+  if(history.replaceState)history.replaceState(null,'','#p'+(i+1));markToc();
+  s.querySelectorAll('video').forEach(()=>{});slides.forEach((x,k)=>{if(k!==i)x.querySelectorAll('video').forEach(v=>{if(!v.paused)v.pause();});});}
+$('#upBtn').onclick=()=>go(cur-1);$('#dnBtn').onclick=()=>go(cur+1);
+addEventListener('keydown',e=>{if(e.target.closest('input,textarea'))return;const k=e.key;
+  if(['ArrowDown','PageDown',' ','ArrowRight'].includes(k)){if(k===' '&&e.target.closest('button,video'))return;e.preventDefault();go(cur+1);}
+  else if(['ArrowUp','PageUp','ArrowLeft'].includes(k)){e.preventDefault();go(cur-1);}
+  else if(k==='Home'){e.preventDefault();go(0);}else if(k==='End'){e.preventDefault();go(slides.length-1);}
+  else if(k==='t'||k==='T'){toggleToc();}else if(k==='Escape'){toggleToc(false);}});
+
+/* ---------- TOC drawer ---------- */
+const drawer=$('#drawer'),tocl=$('#tocl');
+function titleOf(s){return s.type==='cover'?'封面':s.type==='end'?'感謝聆聽':s.type==='ch'?'章節：'+s.t:s.t;}
+tocl.innerHTML=CH.map((c,ci)=>{const end=ci<CH.length-1?CH[ci+1].first:SL.length;const items=[];for(let i=c.first;i<end;i++)items.push(i);
+  return `<details data-c="${ci}"><summary><i>${String(c.no).padStart(2,'0')}</i>${c.t}<small>${items.length} 頁</small></summary><ol>${items.map(i=>`<li><a href="#p${i+1}" data-i="${i}"><span>${i+1}</span>${titleOf(SL[i]).replace(/<[^>]+>/g,'')}</a></li>`).join('')}</ol></details>`;}).join('');
+function markToc(){tocl.querySelectorAll('a.now').forEach(a=>a.classList.remove('now'));const a=tocl.querySelector(`a[data-i="${cur}"]`);if(a)a.classList.add('now');
+  tocl.querySelectorAll('details').forEach(d=>d.classList.toggle('now',+d.dataset.c===SL[cur].ch));}
+function toggleToc(open){const o=open===undefined?drawer.hidden:open;drawer.hidden=!o;$('#tocBtn').setAttribute('aria-expanded',o);
+  if(o){tocl.querySelectorAll('details').forEach(d=>d.open=+d.dataset.c===SL[cur].ch);const a=tocl.querySelector('a.now');if(a)a.scrollIntoView({block:'center'});$('#tocQ').focus({preventScroll:true});}}
+$('#tocBtn').onclick=()=>toggleToc();$('#tocClose').onclick=()=>toggleToc(false);$('#scrim').onclick=()=>toggleToc(false);
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#p"]');if(!a)return;e.preventDefault();const i=+a.getAttribute('href').slice(2)-1;toggleToc(false);go(i);});
+$('#tocQ').addEventListener('input',e=>{const q=e.target.value.trim();tocl.querySelectorAll('details').forEach(d=>{let any=false;d.querySelectorAll('li').forEach(li=>{const m=!q||li.textContent.includes(q);li.hidden=!m;if(m)any=true;});d.hidden=!any&&!!q;d.open=!!q&&any||(!q&&+d.dataset.c===SL[cur].ch);});});
+
+/* start at hash */
+const h=location.hash.match(/^#p(\d+)$/);if(h){const i=+h[1]-1;if(slides[i]){root.style.scrollBehavior='auto';slides[i].scrollIntoView();root.style.scrollBehavior='';}}
+setCur(h&&slides[+h[1]-1]?+h[1]-1:0);
+</script>
+
+</body></html>
