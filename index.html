@@ -222,6 +222,26 @@ body.mob .tgrid span{font-size:14px}
 .cv-art{flex:1;align-self:stretch;position:relative}
 
 
+
+/* zoom: click a picture or a text box to enlarge */
+.zz{cursor:zoom-in;position:relative}
+.zz:hover{outline:3px solid var(--yellow);outline-offset:3px}
+.zz:hover::after{content:"";position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFC629' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6'/%3E%3Cpath d='M15 15l5 5M10.5 8v5M8 10.5h5'/%3E%3C/svg%3E") center/20px no-repeat;z-index:5;pointer-events:none}
+.ph.zz:hover::after{top:16px;right:16px}
+.zoom{position:fixed;inset:0;z-index:80;background:rgba(18,18,16,.82);display:flex;align-items:center;justify-content:center;
+  padding:calc(64px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out;animation:zin .2s ease-out}
+.zoom[hidden]{display:none!important}
+@keyframes zin{from{opacity:0}}
+.zoom-x{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:81}
+.zoom-hint{position:fixed;top:calc(24px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));color:#e9e7e0;font-family:var(--f-hand);font-size:18px;z-index:81}
+.zoom-img{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;max-height:100%;cursor:default}
+.zoom-img img{max-width:94vw;max-height:calc(100vh - 136px);object-fit:contain;background:#fff;padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.zoom-img figcaption{font-family:var(--f-hand);font-size:26px;color:#fff;text-align:center}
+.zoom-box{position:relative;cursor:default}
+.zoom-box>.zin{position:absolute;left:0;top:0;transform-origin:0 0;background:var(--paper);padding:26px;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.zoom-box>.zin>*{margin:0!important;transform:none!important;outline:none!important}
+.zoom-box .zz::after{display:none}
+
 /* speaker */
 .spk{flex:1;display:grid;grid-template-columns:420px 1fr;gap:56px;min-height:0;align-items:center}
 .spk-l{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;gap:26px}
@@ -393,10 +413,11 @@ body.mob .cur{display:none}
     <div class="pane-hd"><b>簡報目錄</b><button class="navb" id="tocClose" aria-label="關閉目錄">關閉</button></div>
     <input id="tocQ" type="search" placeholder="搜尋頁面，例如：拐杖、吞嚥、扶手" aria-label="搜尋頁面">
     <div class="tocl" id="tocl"></div>
-    <div class="keys"><kbd>↓</kbd><kbd>↑</kbd> 或滑動換頁　<kbd>T</kbd> 開關目錄　<kbd>Home</kbd><kbd>End</kbd> 首尾頁</div>
+    <div class="keys"><kbd>↓</kbd><kbd>↑</kbd> 或滑動換頁　<kbd>T</kbd> 開關目錄　點圖片或文字框可放大　<kbd>Home</kbd><kbd>End</kbd> 首尾頁</div>
   </nav>
 </div>
 
+<div class="zoom" id="zoom" hidden role="dialog" aria-modal="true" aria-label="放大檢視"><span class="zoom-hint">點空白處或按 Esc 關閉</span><button class="navb zoom-x" id="zoomX" aria-label="關閉放大">關閉 ✕</button><div id="zoomIn"></div></div>
 <main id="deck"></main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -926,6 +947,30 @@ function toggleToc(open){const o=open===undefined?drawer.hidden:open;drawer.hidd
 $('#tocBtn').onclick=()=>toggleToc();$('#tocClose').onclick=()=>toggleToc(false);$('#scrim').onclick=()=>toggleToc(false);
 document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#p"]');if(!a)return;e.preventDefault();const i=+a.getAttribute('href').slice(2)-1;toggleToc(false);go(i);});
 $('#tocQ').addEventListener('input',e=>{const q=e.target.value.trim();tocl.querySelectorAll('details').forEach(d=>{let any=false;d.querySelectorAll('li').forEach(li=>{const m=!q||li.textContent.includes(q);li.hidden=!m;if(m)any=true;});d.hidden=!any&&!!q;d.open=!!q&&any||(!q&&+d.dataset.c===SL[cur].ch);});});
+
+
+/* ---------- zoom ---------- */
+const ZSEL='.ph:not(:has(video)),.colc,.note,.tip,.steps li,.tbl-wrap,.tgrid>div,.qwhy,.col-text>.pts,.flow,.bars,.big .q,.roles,.spk-ph';
+const zoomEl=$('#zoom'),zoomIn=$('#zoomIn');
+deck.querySelectorAll(ZSEL).forEach(el=>{if(el.closest('.cv-art,.ch-art'))return;if(el.parentElement.closest('.zz'))return;el.classList.add('zz');el.setAttribute('tabindex','0');el.setAttribute('aria-label','點一下放大');});
+function openZoom(el){
+  zoomIn.innerHTML='';
+  const im=el.matches('.ph,.spk-ph')?el.querySelector('img'):null;
+  if(im){const f=document.createElement('figure');f.className='zoom-img';const i=document.createElement('img');i.alt=im.alt;const fit=()=>{const nw=i.naturalWidth||800,nh=i.naturalHeight||600,k=Math.min((innerWidth*.94-24)/nw,(innerHeight-160)/nh);i.style.width=nw*k+24+'px';i.style.height=nh*k+24+'px';};i.onload=fit;i.src=im.currentSrc||im.src;if(i.complete)fit();f.appendChild(i);
+    const c=el.querySelector('figcaption');if(c){const fc=document.createElement('figcaption');fc.textContent=c.textContent;f.appendChild(fc);}zoomIn.appendChild(f);}
+  else{const w=Math.min(el.offsetWidth,1000),box=document.createElement('div');box.className='zoom-box';const inn=document.createElement('div');inn.className='zin';
+    const cl=el.cloneNode(true);cl.classList.remove('zz');cl.style.width=w+'px';cl.style.maxWidth='none';cl.style.height='auto';cl.style.flex='none';
+    const par=el.parentElement,wr=document.createElement(par.tagName);wr.className=par.className.replace(/\bzz\b/,'');
+    wr.style.cssText='display:grid;grid-template-columns:1fr;grid-template-rows:auto;gap:0;flex:none;width:auto;height:auto;list-style:none;padding:0;margin:0;min-height:0';wr.appendChild(cl);inn.appendChild(wr);
+    box.appendChild(inn);zoomIn.appendChild(box);zoomEl.hidden=false;
+    const W=inn.offsetWidth,H=inn.offsetHeight,k=Math.min((innerWidth-40)/W,(innerHeight-110)/H,3.2);
+    inn.style.transform='scale('+k+')';box.style.width=W*k+'px';box.style.height=H*k+'px';}
+  zoomEl.hidden=false;$('#zoomX').focus({preventScroll:true});}
+function closeZoom(){zoomEl.hidden=true;zoomIn.innerHTML='';}
+deck.addEventListener('click',e=>{if(e.target.closest('a,button,video,input'))return;const el=e.target.closest('.zz');if(el){e.stopPropagation();openZoom(el);}},true);
+deck.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('zz')){e.preventDefault();e.stopPropagation();openZoom(e.target);}},true);
+zoomEl.addEventListener('click',e=>{if(e.target.closest('.zoom-img img,.zoom-box .zin')&&!e.target.closest('#zoomX'))return;closeZoom();});
+addEventListener('keydown',e=>{if(!zoomEl.hidden){if(e.key==='Escape'||e.key==='z'||e.key==='Z'){e.preventDefault();closeZoom();}e.stopImmediatePropagation();}},true);
 
 /* start at hash */
 const h=location.hash.match(/^#p(\d+)$/);if(h){const i=+h[1]-1;if(slides[i]){root.style.scrollBehavior='auto';slides[i].scrollIntoView();root.style.scrollBehavior='';}}
