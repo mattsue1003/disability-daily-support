@@ -110,9 +110,11 @@ b,strong{font-weight:900}
 table.t{border-collapse:collapse;width:100%;background:var(--card);font-size:25px;border:2.5px solid var(--line)}
 .t th,.t td{border:1.5px solid #bdbbb4;padding:12px 16px;text-align:left;vertical-align:top;line-height:1.4}
 .t th{background:var(--ink);color:#fff;font-weight:700}
-.t td:first-child{font-weight:700;background:#f4f3ef}
+.t td:first-child{font-weight:700;background:#f4f3ef;white-space:nowrap}
 .t.cmp td,.t.cmp th{text-align:center}
 .t.cmp td:first-child{text-align:left}
+.t.roomy{font-size:27px}
+.t.roomy th,.t.roomy td{padding:20px 20px}
 .t.small{font-size:21px}
 .t.tbig{font-size:32px}
 .t.tbig th,.t.tbig td{padding:22px 24px}
@@ -174,7 +176,7 @@ body.mob .tgrid span{font-size:14px}
 
 /* bar chart */
 .bars{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:10px;min-width:0}
-.bar{display:grid;grid-template-columns:270px 1fr 96px;align-items:center;gap:18px;font-size:27px;font-weight:700}
+.bar{display:grid;grid-template-columns:300px 1fr 130px;align-items:center;gap:18px;font-size:27px;font-weight:700}
 .bar .tr{height:34px;background:#dcdbd5;border-radius:3px;overflow:hidden}
 .bar .fl{height:100%;background:var(--ink);width:var(--w)}
 .bar.hi .fl{background:var(--yellow);box-shadow:inset 0 0 0 2.5px var(--line)}
@@ -220,7 +222,7 @@ body.mob .tgrid span{font-size:14px}
 .cv-art{flex:1;align-self:stretch;position:relative}
 
 /* toc slide */
-.toc-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(6,1fr);grid-auto-flow:column;gap:12px 30px;min-height:0}
+.toc-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);grid-auto-flow:column;gap:12px 30px;min-height:0}
 .toc-grid a{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:4px;padding:8px 18px;font-size:25px;font-weight:700;min-width:0}
 .toc-grid a:hover{background:var(--yellow)}
 .toc-grid a i{font-style:normal;font-family:var(--f-num);font-size:24px;width:44px;flex:none}
@@ -359,7 +361,7 @@ body.mob .cur{display:none}
 <div class="drawer" id="drawer" hidden>
   <div class="scrim" id="scrim"></div>
   <nav class="pane" aria-label="簡報目錄">
-    <div class="pane-hd"><b>課程目錄</b><button class="navb" id="tocClose" aria-label="關閉目錄">關閉</button></div>
+    <div class="pane-hd"><b>簡報目錄</b><button class="navb" id="tocClose" aria-label="關閉目錄">關閉</button></div>
     <input id="tocQ" type="search" placeholder="搜尋頁面，例如：拐杖、吞嚥、扶手" aria-label="搜尋頁面">
     <div class="tocl" id="tocl"></div>
     <div class="keys"><kbd>↓</kbd><kbd>↑</kbd> 或滑動換頁　<kbd>T</kbd> 開關目錄　<kbd>Home</kbd><kbd>End</kbd> 首尾頁</div>
@@ -374,24 +376,61 @@ body.mob .cur{display:none}
 const CH=[];   // chapters
 const SL=[];   // slides
 let curCh=0;
-function chap(no,t,en,o){CH.push({no,t,en,first:SL.length});curCh=CH.length-1;SL.push(Object.assign({type:'ch',no,t,en,ch:curCh},o));}
+function chap(_n,t,en,o){const no=CH.length;CH.push({no,t,en,first:SL.length});curCh=CH.length-1;SL.push(Object.assign({type:'ch',no,t,en,ch:curCh},o));}
 function S(type,o){o.type=type;o.ch=curCh;SL.push(o);}
 
 /* ---------- 開場 ---------- */
 CH.push({no:0,t:'開場',en:'Intro',first:0});
 SL.push({type:'cover',ch:0});
-SL.push({type:'toc',ch:0,t:'課程地圖'});
+SL.push({type:'toc',ch:0,t:'簡報地圖'});
 
 /* ---------- CH1 認識身心障礙者 ---------- */
 chap(1,'認識身心障礙者','Who we serve',{d:'先看懂服務對象是誰、有哪些身分與福利，照顧才會找到對的資源。',img:'s1_0',list:['人口比例','障礙類別','福利身分','服務資源']});
 S('quiz',{t:'先猜猜看',q:'身心障礙者大約占台灣人口的比例是？',opts:['1%','5%','10%'],ans:[1],why:'約 120 萬人，大約每 20 人就有 1 位。你服務的個案、鄰居、家人中，其實很常見。'});
-S('bars',{t:'各類障礙族群分布',k:'2022 年統計',rows:[['肢體障礙',32.0,1],['慢性精神障礙',11.1,1],['聽覺機能障礙',10.8,1],['心智障礙（自閉症、智能障礙）',10.2,1],['失智症',5.8,1],['視覺障礙',4.5,1],['其他類別合計',25.6,0]],note:'本次課程<b>聚焦黃色六類</b>：類別繁多，照顧重點從最常遇到的對象開始。',img:'s3_0'});
+S('bars',{t:'各類障礙族群分布',k:'2022 年統計',rows:[['肢體障礙',32.0,1],['慢性精神障礙',11.1,1],['聽覺機能障礙',10.8,1],['心智障礙（自閉症、智能障礙）',10.2,1],['失智症',5.8,1],['視覺障礙',4.5,1],['其他類別合計',25.6,0]],note:'這份簡報<b>聚焦黃色六類</b>：類別繁多，照顧重點從最常遇到的對象開始。',img:'s3_0'});
 S('cols',{t:'社會福利怎麼分？',k:'福利身分',n:3,cols:[
   {h:'身心障礙證明',pts:['依 ICF 新制鑑定與需求評估','可申請生活補助、輔具補助、交通優待等','有效期限到期前要重新鑑定']},
   {h:'重大傷病卡',pts:['健保身分，免部分負擔','與身障證明是兩套制度','有卡不一定有身障證明']},
   {h:'長期照顧對象',pts:['失能身障者、65 歲以上失能長者等','照管專員評估 CMS 等級','可使用居家服務、復能、輔具、喘息']}],note:'同一個人可能同時具備三種身分，服務可以<b>疊加</b>使用。'});
 S('gal',{t:'身障證明與重大傷病卡長這樣',k:'福利身分',imgs:[{f:'s6_0',c:'身心障礙證明（正反面）'},{f:'s7_0',c:'兩種卡證，用途不同'}],pts:['證明上看得到<b>障礙類別、等級、ICD 診斷</b>與重新鑑定日期','重新鑑定日期快到時，提醒家屬提早預約','證明遺失或資料變更，到戶籍地區公所辦理']});
 S('gal',{t:'身障者可以用到的資源',k:'福利資源',imgs:[{f:'s8_0',c:'經濟、支持服務、就業、稅賦減免'},{f:'s9_0',c:'需求評估後三類福利項目'}],pts:['<b>經濟</b>｜生活補助、保險費補助、租金補貼','<b>支持服務</b>｜居家照顧、日間照顧、輔具、交通','<b>就業</b>｜職業重建窗口、支持性就業','<b>稅賦減免</b>｜所得稅特別扣除、牌照稅減免','有疑問可撥 <mark>1957 福利諮詢專線</mark>']});
+
+/* ---------- 新章：身障服務 × 長照服務 ---------- */
+chap(0,'身障服務 × 長照服務：怎麼搭配','Two systems',{d:'個人助理像居家服務，生活重建像復能，輔具兩邊都有補助。先看懂差別，才能幫個案用對、用足。',img:'s23_0',list:['對照表','個人助理 vs 居服','生活重建 vs 復能','輔具','時數夠不夠','怎麼搭配']});
+S('cols',{t:'兩套制度，各有各的窗口',k:'先分清楚是誰在管',n:2,cols:[
+  {h:'身障福利服務',pts:['法源：<b>身心障礙者權益保障法</b>','窗口：縣市<b>社會局（處）</b>、區公所','門檻：身障證明＋需求評估','重點：自立生活、社會參與、權利保障']},
+  {h:'長期照顧服務',hi:1,pts:['法源：<b>長期照顧服務法</b>','窗口：<b>長照管理中心</b>、1966 專線','門檻：照專評估 CMS 第 2–8 級','重點：日常照顧、減輕家庭負擔、延緩失能']}],note:'持身障證明且有失能狀況的人，<b>兩邊都可能符合</b>。長照使用者中約有 47% 是身障者（衛福部，2025）。'});
+S('table',{small:1,t:'對照表：哪些服務長得很像？',k:'身障體系 vs 長照體系',head:['需求','身障服務','長照服務','可以一起用嗎'],rows:[
+  ['日常生活協助','個人助理（自立生活支持）','居家服務（身體照顧、日常生活照顧）','<mark>可以</mark>，分工不同、時段不重疊'],
+  ['功能恢復訓練','生活重建（定向行動、生活技能）','專業服務・居家復能','<mark>可以</mark>，目標與專業不同'],
+  ['輔具','身障輔具費用補助（2 年 4 項）','輔具及居家無障礙（3 年 4 萬）','同一品項<b>只能擇一</b>'],
+  ['白天去處','身障日間照顧、小作所','日間照顧中心、小規機','依單位規定，通常擇一'],
+  ['家屬喘口氣','臨時及短期照顧','喘息服務','同時段不重複'],
+  ['交通','復康巴士','交通接送（就醫為主）','依目的使用']],note:'原則只有一句：<b>同性質、同時段、同品項不重複給付</b>；性質不同就能搭配。'});
+S('cols',{t:'個人助理 vs 居家服務',k:'看起來都在「幫忙」，目的不一樣',n:2,cols:[
+  {h:'個人助理',pts:['<b>使用者主導</b>：自己決定做什麼、怎麼做','目的：外出、工作、上課、社交、休閒','依「個別化自立生活計畫」核定時數','部分縣市不給做移位、沐浴、陪同就醫']},
+  {h:'居家服務',hi:1,pts:['<b>照顧計畫主導</b>：依核定項目提供','目的：身體照顧、日常生活照顧、陪同就醫','依 CMS 等級的給付額度使用','照顧服務員須完成訓練、有督導']}],note:'衛福部 2025 年說法：<b>生活照顧以長照為主，個人助理用來增進社區參與</b>；工作場域的協助，長照沒有，要靠個助。'});
+S('cols',{t:'生活重建 vs 長照復能',k:'都在「找回能力」，對象與做法不同',n:2,cols:[
+  {h:'身障・生活重建',pts:['對象：<b>中途致障者</b>，視障最常見','內容：定向行動、白手杖、點字、盲用電腦','也教：煮飯、理財、購物等生活技能','由生活重建中心或社福團體提供，時程較長']},
+  {h:'長照・居家復能',hi:1,pts:['對象：有失能的長者與身障者','內容：在家練吃飯、穿衣、移位、如廁','治療師、護理師到宅，短期密集','同時教家屬與照服員怎麼「陪做」']}],note:'例：中途失明的長輩，<b>生活重建</b>教他用白手杖出門，<b>居家復能</b>練他自己備餐、找衣服，兩者可以接力。'});
+S('steps',{t:'輔具：兩邊都有補助，怎麼選？',k:'同一品項只能擇一',steps:[['先確認身分','身障證明？長照 CMS 等級？或兩者都有'],['先評估再購買','都要先評估、核定，拿到公文才買'],['比較自付額','同一台輪椅，兩邊補助金額可能不同'],['留意年限與額度','身障：2 年 4 項｜長照：3 年 4 萬（含無障礙改善）']],chain:1,note:'同一品項在<b>最低使用年限內不能重複補助</b>；不同品項可以分開申請，例如輪椅用長照、浴室扶手也用長照、溝通板用身障。'});
+S('quiz',{t:'Q1 資源可以重疊嗎？',q:'個案同時有長照居服和個人助理，下面哪一個說法正確？',opts:['只能選一個，不能同時用','可以同時用，但同一時段、同一件事不能兩邊都報','兩邊都可以用來做一樣的事'],ans:[1],why:'可以並用，但要分工：洗澡、陪同就醫多由長照居服；上班、上課、社交外出由個助。同一品項的輔具也只能從一邊補助。'});
+S('table',{t:'Q2 到底差在哪裡？',k:'一張表看懂',head:['','身障服務','長照服務'],rows:[
+  ['核心精神','自立生活、自己作主','照顧需求、減輕負擔'],
+  ['誰來評估','社會局委託社工、需求評估人員','長照管理中心照專'],
+  ['怎麼計算','以「時數」核定（如個人助理）','以 CMS 等級的「給付額度」'],
+  ['使用者角色','自己安排內容、挑選助理','依照顧計畫，個管協調'],
+  ['經費','多來自公益彩券回饋金','長照基金']],cmp:1,note:'簡單記：<b>身障看「要過什麼生活」，長照看「需要多少照顧」</b>。'});
+S('steps',{t:'Q3 兩個都符合，怎麼搭配？',k:'五個步驟',steps:[['畫出一天作息','從起床到睡覺，每個時段要做什麼'],['身體照顧交給長照','起床盥洗、沐浴、陪同就醫'],['社會參與交給個助','上班、上課、社團、購物、休閒'],['輔具擇優申請','比自付額，同品項不重複'],['個管與社工一起協調','寫進彼此的計畫，避免空窗']],g:'g5',note:'照服員最能看見<b>哪個時段沒人</b>，發現空窗就回報個管員。'});
+S('table',{t:'一週搭配範例',k:'範例情境，非真實個案',head:['時段','週一到週五','週末'],rows:[
+  ['早上 7–9 點','<b>長照居服</b>：起床、盥洗、早餐','<b>長照居服</b>：沐浴、盥洗'],
+  ['白天','<b>個人助理</b>：陪同上班、職場協助','<b>個人助理</b>：參加教會、逛市場'],
+  ['傍晚','家人、或<b>長照居服</b>備餐','家人陪伴、喘息服務'],
+  ['晚上','家人協助翻身、上床','家人']],cmp:0,note:'個案：35 歲、脊髓損傷、輪椅使用者、全職上班。<b>輔具</b>：輪椅用長照補助，職場電腦輔具申請職務再設計。'});
+S('bars',{t:'個人助理的時數，到底夠不夠？',k:'把每月時數換算成每天',max:744,unit:' 時',rows:[['早期多數縣市上限',60,0],['新北 2022 年起最高',100,1],['每天需要 10 小時的人',300,0],['每天 24 小時的需求',744,0]],note:'每月 60 小時 ≈ <b>每天 2 小時</b>；100 小時 ≈ 每天 3.3 小時。重度障礙者常不夠用，實務上用<b>長照居服補身體照顧</b>，再加上家人。'});
+S('pts',{t:'為什麼會有「爭取時數」的新聞？',k:'近年的發展',pts:['<span class="ld">時數各縣市不同</span><span class="ds">新北最高每月 100 小時（2023 年報導為全國最高），團體指出部分縣市實際只給 60 小時</span>','<span class="ld">法院見解</span><span class="ds">新北重度障礙者申請每月 744 小時，社會局核 60 小時；北高行 2023 年判決：「依需求提供 24 小時服務」應看具體需要，不是固定上限</span>','<span class="ld">服務項目被限縮</span><span class="ds">團體反映多數縣市不讓個助協助移位、沐浴、就醫，理由是長照已有</span>','<span class="ld">修法還在進行</span><span class="ds">2026 年 9 月，身權法個助時數條文仍在立法院協商</span>'],dense:1,note:'實際核定以<b>戶籍地社會局</b>最新規定為準。'});
+S('pts',{t:'照服員可以怎麼幫上忙？',k:'站在第一線',pts:['<span class="ld">知道個案有哪些服務</span><span class="ds">居服、個助、日照、復能、喘息，誰在什麼時段</span>','<span class="ld">記錄真實的一天</span><span class="ds">哪些事做不到、哪個時段沒人，是申請時數最好的證據</span>','<span class="ld">不越界、也不推給別人</span><span class="ds">自己的照顧計畫內做好，計畫外的需求回報個管</span>','<span class="ld">告訴家屬去哪裡問</span><span class="ds">長照 1966、身障福利 1957、縣市社會局、輔具中心</span>']});
+S('links',{t:'查證資料來源',k:'新聞與官方資訊',links:[['衛福部：個助與長照可同時使用（2025.06）','https://www.ctee.com.tw/news/20250623701551-431401','工商時報'],['新北個助每月最高 100 小時、法院判決（2023.03）','https://www.cna.com.tw/news/aloc/202303160334.aspx','中央社'],['個助時數與項目遭限縮（2025.12）','https://udn.com/news/story/6656/9179921','聯合報'],['身權法個助入法協商（2026.09）','https://udn.com/news/story/7266/9748408','聯合報'],['長照與身障輔具對照表','https://www.health.taichung.gov.tw/media/887989/%E9%99%84%E4%BB%B62-%E9%95%B7%E7%85%A7%E8%BC%94%E5%85%B7%E7%8F%BE%E5%88%B6%E8%88%87%E8%BA%AB%E9%9A%9C%E8%BC%94%E5%85%B7%E6%96%B0%E5%88%B6%E5%B0%8D%E7%85%A7%E8%A1%A8.pdf','臺中市政府'],['長照 1966 專區','https://1966.gov.tw/LTC/','衛福部']],n:3});
 
 /* ---------- CH2 復能觀念 ---------- */
 chap(2,'復能觀念','Reablement',{d:'復健練的是能力，復能找回的是生活。照服員是復能最重要的陪伴者。',img:'s41_0',list:['復健 vs 復能','活動分析','衰弱者運動','自立支援','復能 20 小撇步']});
@@ -454,6 +493,28 @@ S('cols',{t:'聽障者的三種溝通方式',k:'先問他習慣怎麼溝通',n:3
   {h:'只用口語',pts:['戴助聽器','不會手語','聽障程度較輕'],note:''},
   {h:'口語＋手語',hi:1,pts:['戴助聽器、人工電子耳或讀唇','口語、手語熟練度不一','程度通常較重']},
   {h:'只用手語',pts:['完全無法口語','聽障程度極重','可用筆談、手機打字輔助']}],note:'說話時<b>面對他、放慢、嘴型清楚</b>，不需要大吼。'});
+
+/* ---------- 新章：聽障・視障・自閉症 溝通與輔具 ---------- */
+chap(0,'聽障・視障・自閉症：溝通與輔具','Communicate well',{d:'溝通不是比誰說得大聲，而是找到對方接得到的管道。',img:'s257_1',list:['聽障溝通','聽障輔具','視障溝通','時鐘方位','視障輔具','自閉症溝通','自閉症輔具']});
+S('cols',{t:'和聽障者溝通：做與不做',k:'聽障',n:2,cols:[
+  {h:'這樣做',hi:1,pts:['先引起注意：輕拍肩膀、揮手、開關燈','面對面，光線照在<b>你的臉</b>上','正常速度、嘴型清楚，用短句','重要的字<b>寫下來</b>：時間、藥名、數字','先問他習慣手語、筆談還是讀唇']},
+  {h:'不要這樣',pts:['從背後說話或突然碰他','大吼、刻意誇張嘴型','邊走邊說、戴口罩又背光','說「沒事啦」「等一下再說」就帶過','把他當成聽不懂、理解力差']}],note:'問完要<b>確認理解</b>：請他說一次或指給你看，不要只看他點頭。'});
+S('gal',{t:'聽障者可用的輔具',k:'居服現場用得到',imgs:[{f:'s257_1',c:'助聽器'},{f:'s257_0',c:'輔聽器'},{f:'s290_0',c:'筆談、白板'}],g:'g3',pts:['<b>助聽器、人工電子耳</b>：協助他戴好、檢查電池與乾燥盒','<b>手機即時字幕</b>：說話轉文字，現場馬上能用','<b>閃光門鈴、震動鬧鐘</b>：聽不到聲音也知道有人來','<b>簡訊報案</b>：110、119 可用簡訊求助']});
+S('cols',{t:'和視障者互動：做與不做',k:'視障',n:2,cols:[
+  {h:'這樣做',hi:1,pts:['進門先出聲：「阿伯，我是居服員小美」','說明你正在做什麼、要離開時也告訴他','描述方向用<b>具體位置</b>：「你右手邊桌上」','導引時讓他扶你手肘，你走半步前','物品用完<b>放回原位</b>']},
+  {h:'不要這樣',pts:['不出聲就碰他、拉他','說「這裡、那裡、這個」','移動家具、改變物品位置沒告知','門半開，讓他撞到門邊','直接抓著他的手杖或手臂走']}],note:'先問「<b>需要我幫忙嗎？</b>」，照他說的方式協助。'});
+S('clock',{t:'時鐘方位法：告訴他飯菜在哪',k:'視障',items:[[12,'湯'],[3,'青菜'],[6,'白飯'],[9,'魚']],pts:['把餐盤想成<b>時鐘</b>，用幾點鐘說明位置','「6 點鐘是飯，3 點鐘是青菜，12 點鐘是湯」','熱湯、尖銳物先提醒，杯子固定放右上方','也可以用在桌面、櫃子：「桌子 2 點鐘方向是藥盒」']});
+S('gal',{t:'視障者可用的輔具',k:'居服現場用得到',imgs:[{f:'s253_0',c:'白手杖'},{f:'s251_0',c:'放大鏡'},{f:'s252_0',c:'可攜式擴視機'}],g:'g3',pts:['<b>白手杖、擴視機、放大鏡</b>：出門與閱讀','<b>語音報時鐘、語音血壓計、語音體重計</b>','<b>觸點貼紙</b>：貼在電鍋、洗衣機、遙控器常用鍵','<b>液位提示器</b>：倒水快滿時會響，不怕燙','<b>手機報讀</b>：iPhone VoiceOver、Android TalkBack']});
+S('cols',{t:'和自閉症者溝通',k:'自閉症',n:2,cols:[
+  {h:'這樣做',hi:1,pts:['<b>先預告</b>：「等一下 3 點我們去洗澡」','用圖卡、時間表，看得到比聽得到清楚','句子短、具體：「把杯子放水槽」','說完<b>等 5–10 秒</b>，給他反應時間','轉換活動前倒數：「再 5 分鐘」']},
+  {h:'不要這樣',pts:['臨時改流程、換人沒說明','用比喻、反話、開玩笑','一次給很多指令','強迫眼神接觸或擁抱','在吵、亮、擠的地方硬要他配合']}],note:'他的固定流程不是「固執」，而是讓他<b>感到安全</b>的方法。'});
+S('steps',{t:'情緒爆發時怎麼辦？',k:'自閉症',steps:[['降低刺激','關小聲音與燈光，請旁人退開'],['少說話','不講道理、不責罵，簡單一句「我在這裡」'],['保持安全','移開危險物品，保持距離'],['給他空間','安靜角落、熟悉的安撫物'],['事後再談','平靜後一起找原因：聲音？等待？改變？']],g:'g5',note:'記錄<b>前因與結果</b>，下次提早避開觸發點。'});
+S('gal',{t:'自閉症者可用的輔具',k:'居服現場用得到',imgs:[{f:'s266_0',c:'紓壓玩具'},{f:'s266_1',c:'紓壓骰子'},],g:'g2',pts:['<b>視覺時間表、先…再…板</b>：「先刷牙，再看電視」','<b>視覺計時器</b>：看得到剩多少時間','<b>降噪耳罩</b>：對聲音敏感時戴上','<b>溝通圖卡、溝通 App</b>：用指的表達需求','<b>紓壓與感覺玩具</b>：等待或焦躁時手上有事做']});
+S('table',{t:'三類對象一張表',k:'總整理',head:['','聽障','視障','自閉症'],rows:[
+  ['開始互動','先引起注意，面對面','先出聲報名字','先預告，固定的人與流程'],
+  ['傳遞訊息','短句、嘴型清楚、寫下來','具體方位、時鐘方位法','短句具體、圖卡、時間表'],
+  ['確認理解','請他複述或指出','請他摸一下確認','看他的動作，不只聽回答'],
+  ['常用輔具','助聽器、即時字幕、閃光門鈴','白手杖、擴視機、觸點貼紙','視覺時間表、計時器、降噪耳罩']],cmp:1,note:'共通原則：<b>先問他習慣怎麼溝通</b>，把他當成能自己做決定的人。'});
 
 /* ---------- CH6 肢體障礙與輔具選用 ---------- */
 chap(6,'肢體障礙與輔具選用','Mobility & Devices',{d:'輔具不是看病名挑的，是看他想做什麼、做不到哪一步。',img:'s67_0',list:['肢體障礙','腦性麻痺','生活輔具','選用三原則','助行器','補助流程']});
@@ -702,7 +763,7 @@ function doodles(i){const a=DD[i%6],b=DD[(i*7+3)%6];
   const p1=[[1380,30,180,90],[30,780,150,90],[1420,760,130,110],[40,20,120,100]][i%4];
   return `<svg class="dd" style="left:${p1[0]}px;top:${p1[1]}px;width:${p1[2]}px;height:${p1[3]}px" aria-hidden="true"><use href="#${a}"/></svg>`;}
 const R={};
-R.cover=()=>`<div class="cv-t"><span class="tag">Disability care · 20 hr course</span>
+R.cover=()=>`<div class="cv-t"><span class="tag">Disability care · 身障 20 小時訓練</span>
   <h1>身心障礙<br><mark>日常生活</mark>支持</h1>
   <div class="who">講師｜鍾孟修 職能治療師 <span>愛迪樂團隊</span></div>
   <div class="hint"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v14M6 12l6 6 6-6"/></svg>往下滑動開始，或按「目錄」跳到任何一章</div></div>
@@ -713,7 +774,7 @@ R.cover=()=>`<div class="cv-t"><span class="tag">Disability care · 20 hr course
   <svg class="dd" style="right:0;bottom:-30px;width:220px;height:120px"><use href="#d-loop"/></svg>
   <svg class="dd" style="left:-4%;top:0;width:120px;height:120px"><use href="#d-burst"/></svg>
   <div class="lk" style="position:absolute;left:-2%;bottom:2%;width:220px;transform:rotate(-3deg);padding:14px;gap:6px"><div class="qr" style="width:170px;height:170px">${qr('https://mattsue1003.github.io/disability-daily-support/')}</div><b style="font-size:20px">手機掃描看簡報</b></div></div>`;
-R.toc=()=>`<header class="hd"><span class="kick"><i></i>Course map</span><h2>課程地圖</h2></header>
+R.toc=()=>`<header class="hd"><span class="kick"><i></i>Map</span><h2>簡報地圖</h2></header>
   <div class="bd"><div class="toc-grid">${CH.slice(1).map(c=>`<a href="#p${c.first+1}"><i>${String(c.no).padStart(2,'0')}</i>${c.t}<small>p.${c.first+1}</small></a>`).join('')}</div></div>`;
 R.ch=s=>{const c=CH[s.ch];return `<div class="ch-text"><div class="ch-no">${String(s.no).padStart(2,'0')}<small>${s.en}</small></div>
   <h2 class="ch-t">${s.t}</h2><p class="ch-d">${s.d||''}</p><div class="ch-list">${(s.list||[]).map(x=>`<span>${x}</span>`).join('')}</div></div>
@@ -740,7 +801,7 @@ R.steps=s=>{const n=s.steps.length;const g=s.g==='g6x'?null:s.g;
   return hd(s)+`<div class="bd" style="flex-direction:column;gap:22px"><div class="bd" style="gap:30px"><ol class="steps${s.chain&&rows===1?' chain':''}" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">${s.steps.map(x=>`<li><b>${x[0]}</b>${x[1]?`<span>${x[1]}</span>`:''}</li>`).join('')}</ol>
   ${s.imgs?`<div class="col-img g1" style="flex:.5">${s.imgs.map(f=>ph(f)).join('')}</div>`:''}</div>${note(s.note)}</div>`;};
 R.table=s=>hd(s)+`<div class="bd" style="flex-direction:column;gap:22px">${s.flow?`<div class="flow">${s.flow.map((x,i)=>`<span class="${i==3?'hl':''}">${x}</span>`).join('<em>→</em>')}</div>`:''}
-  <div class="bd" style="gap:30px"><div class="tbl-wrap"><table class="t${s.cmp?' cmp':''}${s.small?' small':''}${!s.small&&s.rows.length<=4&&!s.imgs?' tbig':''}"><thead><tr>${s.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>
+  <div class="bd" style="gap:30px"><div class="tbl-wrap"><table class="t${s.cmp?' cmp':''}${s.small?' small':''}${!s.small&&s.rows.length<=4&&s.head.length<=3&&!s.imgs?' tbig':''}${!s.small&&!s.imgs?' roomy':''}"><thead><tr>${s.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${s.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>
   ${s.imgs?`<div class="gal ${gridCls(s.imgs.length,s.imgs.length===4?'g4r':null)}" style="flex:.8">${s.imgs.map(f=>ph(f)).join('')}</div>`:''}${note(s.note)}</div>`;
 R.quiz=s=>hd(s)+`<div class="bd"><div class="quiz" data-ans="${s.ans.join(',')}"><div class="qbox"><div class="qq">${s.q}</div>
   <div class="qopts">${s.opts.map((o,i)=>`<button class="qopt" data-i="${i}"><span class="k">${i+1}</span>${o}${s.tagA?`<small style="margin-left:auto;font-family:var(--f-hand);font-weight:400;font-size:.75em;color:var(--mute)" class="qa-tag" hidden>${s.tagA[i]}</small>`:''}</button>`).join('')}</div>
@@ -751,14 +812,18 @@ R.sort=s=>hd(s)+`<div class="bd" style="flex-direction:column;gap:20px"><div cla
 R.big=s=>hd(s)+`<div class="bd"><div class="big"><div class="q">${s.q}</div><div class="s">${s.s}</div></div>${s.img?`<div class="col-img g1" style="flex:.7">${ph(s.img,'tape')}</div>`:''}</div>`;
 R.vid=s=>hd(s)+`<div class="bd"><div class="col-text" style="flex:.8">${ptsHTML(s.pts)}</div><div class="col-img g1" style="flex:1.3"><figure class="ph" style="--r:-.6deg"><video src="${s.v}" poster="${s.p}" controls preload="none" playsinline></video></figure></div></div>`;
 R.links=s=>hd(s)+`<div class="bd"><div class="links" style="--n:${s.n||s.links.length}">${s.links.map(l=>`<a class="lk" href="${l[1]}" target="_blank" rel="noopener"><div class="qr">${qr(l[1])}</div><b>${l[0]}</b><span>${l[2]||''}</span></a>`).join('')}</div></div>`;
-R.bars=s=>hd(s)+`<div class="bd"><div class="col-text"><div class="bars">${s.rows.map(r=>`<div class="bar${r[2]?' hi':''}"><span>${r[0]}</span><div class="tr"><div class="fl" style="--w:${r[1]/32*100}%"></div></div><span class="v">${r[1].toFixed(1)}%</span></div>`).join('')}</div>${note(s.note)}</div></div>`;
+R.bars=s=>hd(s)+`<div class="bd"><div class="col-text"><div class="bars">${s.rows.map(r=>`<div class="bar${r[2]?' hi':''}"><span>${r[0]}</span><div class="tr"><div class="fl" style="--w:${r[1]/(s.max||32)*100}%"></div></div><span class="v">${s.unit?r[1]+s.unit:r[1].toFixed(1)+'%'}</span></div>`).join('')}</div>${note(s.note)}</div></div>`;
 R.tips=s=>hd(s)+`<div class="bd"><div class="tips">${s.tips.map(t=>`<div class="tip${t[2]?' wide':''}"><h4><span>${t[0]}</span></h4><ul>${t[1].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}</div></div>`;
 R.tgrid=s=>hd(s)+`<div class="bd"><div class="tgrid">${s.items.map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div></div>`;
 R.flow=s=>hd(s)+`<div class="bd" style="flex-direction:column;justify-content:space-evenly"><div class="flow" style="font-size:28px;gap:16px 10px">${s.flow.map((x,i)=>`<span class="${s.hl.includes(i)?'hl':''}">${x}</span>`).join('<em>→</em>')}</div>${ptsHTML(s.pts)}</div>`;
+R.clock=s=>{const cx=200,cy=200,r=150;const pos=h=>{const a=(h/12)*2*Math.PI-Math.PI/2;return [cx+Math.cos(a)*r*.62,cy+Math.sin(a)*r*.62];};
+  const ticks=[...Array(12)].map((_,i)=>{const a=((i+1)/12)*2*Math.PI-Math.PI/2;return `<text x="${cx+Math.cos(a)*(r+26)}" y="${cy+Math.sin(a)*(r+26)+9}" text-anchor="middle" font-family="Archivo Black,Arial Black" font-size="24" fill="var(--ink)">${i+1}</text>`;}).join('');
+  const items=s.items.map(([h,t])=>{const [x,y]=pos(h);return `<circle cx="${x}" cy="${y}" r="44" fill="var(--yellow)" stroke="var(--line)" stroke-width="3"/><text x="${x}" y="${y+10}" text-anchor="middle" font-family="Noto Sans TC" font-weight="900" font-size="28" fill="var(--ink)">${t}</text>`;}).join('');
+  return hd(s)+`<div class="bd"><div class="col-text">${ptsHTML(s.pts)}</div><div class="col-img g1" style="flex:.9;place-items:center"><svg viewBox="-30 -30 460 460" style="width:100%;height:100%;max-height:640px" role="img" aria-label="時鐘方位餐盤示意"><circle cx="${cx}" cy="${cy}" r="${r+46}" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 6"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--card)" stroke="var(--line)" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${r-18}" fill="none" stroke="#c9c7c0" stroke-width="1.5"/>${ticks}${items}</svg></div></div>`;};
 R.end=s=>`<div class="cv-t"><span class="tag">Thank you</span><h1>感謝您的<mark>聆聽</mark></h1>
   <div class="who">鍾孟修 職能治療師 <span>愛迪樂團隊</span></div>
   <div class="chips"><span class="chip">LINE　@rrg9564e</span><a class="chip y" href="https://www.facebook.com/tedandet/" target="_blank" rel="noopener">臉書粉絲專頁 ↗</a></div>
-  <div class="hint">課後問題，歡迎透過 LINE 或粉專留言詢問</div></div>
+  <div class="hint">有問題，歡迎透過 LINE 或臉書粉專詢問</div></div>
   <div class="cv-art"><div class="scrap" style="left:6%;top:6%;width:86%;height:82%;transform:rotate(2deg)"></div>
   <div class="sun" style="width:260px;height:260px;left:4%;top:4%"></div>
   <div class="half color" style="left:24%;top:12%;width:44%;height:76%;transform:rotate(-2deg);background:transparent;box-shadow:none"><img src="img/s299_0.webp" alt="" style="object-fit:contain"></div>
